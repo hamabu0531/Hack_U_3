@@ -4,13 +4,13 @@ import { getStorage, ref, uploadBytes, connectStorageEmulator, getDownloadURL } 
 
 const firebaseConfig = {
     apiKey: "xxx",
-    authDomain: "hack-u-3.firebaseapp.com",
-    projectId: "hack-u-3",
-    storageBucket: "hack-u-3.firebasestorage.app",
-    messagingSenderId: "1092046712255",
-    appId: "1:1092046712255:web:4f03f0bd97ae3f6464850a",
-    measurementId: "G-801CZ8LVZY"
-};
+    authDomain: "xxx",
+    projectId: "xxx",
+    storageBucket: "xxx",
+    messagingSenderId: "xxx",
+    appId: "xxx",
+    measurementId: "xxx"
+  };
 
 // Firebase を初期化
 const app = initializeApp(firebaseConfig);
