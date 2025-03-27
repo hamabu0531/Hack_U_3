@@ -3,7 +3,7 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https
 import { getStorage, ref, uploadBytes, connectStorageEmulator, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCEesf4nWo-NZ2kin2wqoH41v8yRGe2nAA",
+    apiKey: "xxx",
     authDomain: "hack-u-3.firebaseapp.com",
     projectId: "hack-u-3",
     storageBucket: "hack-u-3.firebasestorage.app",
