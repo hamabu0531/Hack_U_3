@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>レビュー投稿サイト</title>
-    <link rel="stylesheet" href="/css/review-posting.css">
-    <script type="module" src="/js/review-posting.js" defer></script>
+    <link rel="stylesheet" href="./css/review-posting.css">
+    <script type="module" src="./js/review-posting.js" defer></script>
 </head>
 <body>
+    <button id="deleteCollection" type="button">全レビュー削除(デバッグ用)</button>
+    <button id="showImage" type="button">画像取得</button>
     <div class="container">
         <h1>レビュー投稿サイト</h1>
         <form id="reviewForm">
@@ -22,6 +24,7 @@
             
             <button type="submit">投稿</button>
         </form>
+        
     </div>
 </body>
 </html>

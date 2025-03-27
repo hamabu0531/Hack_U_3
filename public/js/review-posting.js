@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, connectStorageEmulator } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, connectStorageEmulator, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCEesf4nWo-NZ2kin2wqoH41v8yRGe2nAA",
@@ -27,9 +27,10 @@ if (isEmulating) {
 
 
 // データ処理関数
-async function addReviewToFirestore(title, imageScore) {
+async function addReviewToFirestore(bookId, title, imageScore) {
     try {
         const docRef = await addDoc(collection(db, "reviews"), {
+            bookId: bookId,
             title: title,
             score: imageScore,
         });
@@ -39,7 +40,7 @@ async function addReviewToFirestore(title, imageScore) {
     }
 }
 
-async function addReviewToStorage(imageFile) {
+async function addImageToStorage(imageFile) {
         const storage = getStorage(app);
 
         if (imageFile) {
@@ -52,6 +53,34 @@ async function addReviewToStorage(imageFile) {
         }
 }
 
+async function deleteAllReviews() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "reviews"));
+        const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+        await Promise.all(deletePromises);
+        console.log("すべてのレビューを削除しました");
+    } catch (error) {
+        console.error("削除中にエラーが発生しました:", error);
+    }
+}
+
+async function getImageFromStorage(imageName) {
+    const storage = getStorage(app);
+    const imageRef = ref(storage, `images/${imageName}`); // 画像の参照を取得
+
+    try {
+        // ダウンロードURLを取得
+        const url = await getDownloadURL(imageRef);
+        console.log("画像URL: ", url);
+
+        // URLを使って画像を表示
+        const imgElement = document.createElement('img');
+        imgElement.src = url;
+        document.body.appendChild(imgElement);  // 画像をページに追加
+    } catch (error) {
+        console.error("Error fetching image: ", error);
+    }
+}
 
 
 // 各種イベントリスナー
@@ -68,8 +97,22 @@ document.getElementById("reviewForm").addEventListener("submit", function(event)
     // 画像のスコアを計算する関数を呼ぶ
 
     // Firestoreに格納
-    addReviewToFirestore(title, [0, 1, 1]);
+    addReviewToFirestore(10, title, [0, 1, 1]);
 
     // Storageに格納
-    addReviewToStorage(imageFile);
+    addImageToStorage(imageFile);
+});
+
+// 削除ボタン押下時の処理
+document.getElementById("deleteCollection").addEventListener("click", async (event) => {
+    event.preventDefault();
+    if (confirm("本当にすべてのレビューを削除しますか？")) {
+        await deleteAllReviews();
+    }
+});
+
+// 画像取得ボタン押下時の処理
+document.getElementById("showImage").addEventListener("click", async (event) => {
+    event.preventDefault();
+    getImageFromStorage(document.getElementById("image").files[0].name);
 });
