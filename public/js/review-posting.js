@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, connectStorageEmulator, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-functions.js";
 
 const firebaseConfig = {
     apiKey: "xxx",
@@ -10,17 +11,31 @@ const firebaseConfig = {
     messagingSenderId: "xxx",
     appId: "xxx",
     measurementId: "xxx"
-  };
+};
 
 // Firebase を初期化
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const functions = getFunctions(app);
+const getFirebaseConfig = httpsCallable(functions, 'getFirebaseConfig');
+getFirebaseConfig()
+    .then((result) => {
+        const config = result.data;
+        console.log("Fetched Firebase Config:", config);
+
+        // **Firebase を再初期化**
+        initializeApp(config);
+        console.log("Firebase reinitialized with fetched config");
+    })
+    .catch((error) => {
+        console.error("Error fetching Firebase config:", error);
+    });
 
 // ローカルで実行中の場合は、エミュレータを使う
 const isEmulating = window.location.hostname === 'localhost'
 if (isEmulating) {
-  const storage = getStorage()
-  connectStorageEmulator(storage, 'localhost', 9199)
+    const storage = getStorage()
+    connectStorageEmulator(storage, 'localhost', 9199)
 }
 
 // ここまでFirestoreのセッティング
@@ -41,16 +56,16 @@ async function addReviewToFirestore(bookId, title, imageScore) {
 }
 
 async function addImageToStorage(imageFile) {
-        const storage = getStorage(app);
+    const storage = getStorage(app);
 
-        if (imageFile) {
-            const storageRef = ref(storage, `images/${imageFile.name}`);
-            uploadBytes(storageRef, imageFile).then((snapshot) => {
-                console.log('Uploaded a blob or file!');
-            }).catch((error) => {
-                console.error("Error uploading file: ", error);
-            });
-        }
+    if (imageFile) {
+        const storageRef = ref(storage, `images/${imageFile.name}`);
+        uploadBytes(storageRef, imageFile).then((snapshot) => {
+            console.log('Uploaded a blob or file!');
+        }).catch((error) => {
+            console.error("Error uploading file: ", error);
+        });
+    }
 }
 
 async function deleteAllReviews() {
@@ -86,9 +101,9 @@ async function getImageFromStorage(imageName) {
 // 各種イベントリスナー
 
 // 投稿ボタン押下時の処理
-document.getElementById("reviewForm").addEventListener("submit", function(event) {
+document.getElementById("reviewForm").addEventListener("submit", function (event) {
     event.preventDefault();
-    
+
     let title = document.getElementById("title").value;
     let review = document.getElementById("review").value;
     let imageInput = document.getElementById("image");
