@@ -4,26 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>レビュー投稿サイト</title>
-    <link rel="stylesheet" href="./css/review-posting.css">
+    <link rel="stylesheet" href="/css/review-posting.css">
     <script type="module" src="./js/review-posting.js" defer></script>
 </head>
 <body>
     <button id="deleteCollection" type="button">全レビュー削除(デバッグ用)</button>
     <button id="showImage" type="button">画像取得</button>
     <div class="container">
-        <h1>レビュー投稿サイト</h1>
-        <form id="reviewForm">
+        <h1>レビューを投稿する</h1>
+        <div id="reviewForm">
             <label for="title">本のタイトル:</label>
             <input type="text" id="title" required>
             
-            <label for="review">レビュー:</label>
-            <textarea id="review" required></textarea>
-            
-            <label for="image">画像:</label>
+            <label for="image">本を象徴する画像:</label>
             <input type="file" id="image" accept="image/*">
+
+            <label for="emotion">本の分類:</label>
+            <div class="tabs">
+                <button class="tab-button active" data-emotion="喜">喜</button>
+                <button class="tab-button" data-emotion="怒">怒</button>
+                <button class="tab-button" data-emotion="哀">哀</button>
+                <button class="tab-button" data-emotion="楽">楽</button>
+            </div>
             
-            <button type="submit">投稿</button>
-        </form>
+            <button id="submit">投稿</button>
+        </div>
         
     </div>
 </body>
