@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>画像アップロード</title>
-    <link rel="stylesheet" href="./ccs/style.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/books.js"></script> <!-- books.js を読み込む -->
 </head>
 <body>
 
@@ -24,6 +25,27 @@
         <img id="preview">
     </div>
 
+
+
+
+
     <script src="./js/script.js"></script>
+        <!-- 本のリスト表示 -->
+        <h2>本のリスト</h2>
+
+        <ul id="bookList"></ul>
+
+        <script>
+            // books.js の getBooks() を呼び出す
+            const books = getBooks();
+            const bookList = document.getElementById("bookList");
+    
+            // 本のタイトルをリストに追加
+            books.forEach(book => {
+                const li = document.createElement("li");
+                li.textContent = book.title;
+                bookList.appendChild(li);
+            });
+        </script>
 </body>
 </html>
