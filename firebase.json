@@ -22,12 +22,6 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/review-posting.html"
-      }
     ]
   },
   "storage": {
