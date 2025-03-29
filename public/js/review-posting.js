@@ -3,6 +3,7 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https
 import { getStorage, ref, uploadBytes, connectStorageEmulator, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 const firebaseConfig = {
+<<<<<<< HEAD
     apiKey: "xxx",
     authDomain: "xxx",
     projectId: "xxx",
@@ -10,6 +11,15 @@ const firebaseConfig = {
     messagingSenderId: "xxx",
     appId: "xxx",
     measurementId: "xxx"
+=======
+    apiKey: "AIzaSyCEesf4nWo-NZ2kin2wqoH41v8yRGe2nAA",
+    authDomain: "hack-u-3.firebaseapp.com",
+    projectId: "hack-u-3",
+    storageBucket: "hack-u-3.firebasestorage.app",
+    messagingSenderId: "1092046712255",
+    appId: "1:1092046712255:web:d5020148df6daaf364850a",
+    measurementId: "G-XZPBY1P44Y"
+>>>>>>> e006bff74d92bbeb6047953e3e51af925467ead8
 };
 
 
@@ -128,10 +138,13 @@ document.getElementById("submit").addEventListener("click", async function (even
 
     // Firestoreに格納
     addReviewToFirestore(10, title, imageUrl, selectedTab, 0, 0);
+<<<<<<< HEAD
 
     // 画面を更新
     document.getElementById("submitted-container").style.display = "block";
     document.getElementById("posting-container").style.display = "none";
+=======
+>>>>>>> e006bff74d92bbeb6047953e3e51af925467ead8
 });
 
 // 削除ボタン押下時の処理
