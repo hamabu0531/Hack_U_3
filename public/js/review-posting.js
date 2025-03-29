@@ -140,12 +140,6 @@ document.getElementById("deleteCollection").addEventListener("click", async (eve
     }
 });
 
-// 画像取得ボタン押下時の処理
-document.getElementById("showImage").addEventListener("click", async (event) => {
-    event.preventDefault();
-    getImageFromStorage(document.getElementById("image").files[0].name);
-});
-
 // 画像選択時の処理
 document.getElementById("image").addEventListener("change", function (event) {
     const file = event.target.files[0];
