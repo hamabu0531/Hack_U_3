@@ -29,7 +29,7 @@ if (isEmulating) {
 
 
 // データ処理関数
-async function addReviewToFirestore(bookId, title, imageUrl, average, variance) {
+async function addReviewToFirestore(bookId, title, imageUrl, average, variance, emotion) {
     try {
         const docRef = await addDoc(collection(db, "reviews"), {
             bookId: bookId,
@@ -37,6 +37,7 @@ async function addReviewToFirestore(bookId, title, imageUrl, average, variance) 
             imageUrl: imageUrl,
             average: average,
             variance: variance,
+            emotion: emotion
         });
         console.log("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -111,6 +112,7 @@ document.getElementById("submit").addEventListener("click", async function (even
 
     let title = document.getElementById("title").value;
     let imageInput = document.getElementById("image");
+    let selectedTab = document.querySelector('.tab-button.active').getAttribute('data-emotion');
     let imageFile = imageInput.files[0];
 
     // 画像やタイトルが選択されていない場合はエラーメッセージを表示
@@ -125,7 +127,7 @@ document.getElementById("submit").addEventListener("click", async function (even
     const imageUrl = await addImageToStorage(imageFile);
 
     // Firestoreに格納
-    addReviewToFirestore(10, title, imageUrl, 0, 0);
+    addReviewToFirestore(10, title, imageUrl, 0, 0, selectedTab);
 
     // 画面を更新
     document.getElementById("submitted-container").style.display = "block";
