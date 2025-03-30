@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>レビュー投稿サイト</title>
+    <link rel="stylesheet" href="/css/review-posting.css">
+    <script type="module" src="./js/review-posting.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <button id="deleteCollection" type="button">全レビュー削除(デバッグ用)</button>
+    </header>
+    <div class="flex-zone">
+        <div id="posting-container">
+            <h1>レビューを投稿する</h1>
+            <div class="reviewForm">
+                <div class="review-title">
+                    <label for="title">本のタイトルを教えてください！</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="review-image">
+                    <label for="image">本を象徴する画像をアップロードしてください！</label>
+                    <div class="image-preview" id="imagePreview">
+                        <input type="file" id="image" accept="image/*" required>
+                        <img id="preview" src="" alt="Image Preview" style="display: none;">
+                    </div>
+                </div>
+                <button id="submit">投稿</button>
+            </div>
+    
+        </div>
+        <div id="submitted-container" style="display: none;">
+            <h1>レビューの投稿が完了しました</h1>
+            <a href="./index.html">
+                <button id="goToTop">トップに戻る</button>
+            </a>
+        </div>
+    </div>
+    
+</body>
+
+</html>
