@@ -34,6 +34,7 @@ function calculateStats(vector) {
     const MIN_MEAN = 0;
     const MAX_MEAN = 1;
     const MIN_VARIANCE = 0;
+    // 分散の値が偏るので辺個する必要あり
     const MAX_VARIANCE = 0.25;
 
     const normalizedMean = normalizeValue(mean, MIN_MEAN, MAX_MEAN);
@@ -150,6 +151,7 @@ function image2vec(image, dimensions = 16) {
     }
 }
 
+// 分散が0-1の範囲で収まっていない．image2vecDNNは一時凍結
 /**
  * DNNモデルを使用して画像を特徴ベクトルに変換する関数
  * need model.js
