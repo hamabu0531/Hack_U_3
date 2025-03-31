@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>画像アップロード</title>
     <link rel="stylesheet" href="./css/style.css">
+    <script type="module" src="./js/script.js"></script>
     <script src="./js/books.js"></script> <!-- books.js を読み込む -->
 </head>
 <body>
@@ -18,34 +19,58 @@
 
     <div class="container">
         <label for="imageInput" class="label-file">画像を選択</label>
-        <input type="file" id="imageInput" accept="image/*">
+        <input type="file" id="imageInput" accept="image/*" onchange="showSearchSection()">
         <br>
         <button onclick="processImage()">画像を表示</button>
         <br>
+       
+ 
+        <!-- <button onclick="searchBooks()">検索</button> -->
         <img id="preview">
+        <h1>Book Search</h1>
+        <label for="bookIdInput">Book ID:</label>
+        <input type="text" id="bookIdInput" placeholder="Enter Book ID">
+        <button id="booksearch">Search</button>
     </div>
 
-
-
-
-
-    <script src="./js/script.js"></script>
-        <!-- 本のリスト表示 -->
-        <h2>本のリスト</h2>
-
-        <ul id="bookList"></ul>
-
-        <script>
-            // books.js の getBooks() を呼び出す
-            const books = getBooks();
-            const bookList = document.getElementById("bookList");
     
-            // 本のタイトルをリストに追加
-            books.forEach(book => {
+    
+    <!-- 本のリスト表示 -->
+    <div id="searchSection" style="display: none;">
+        <h2>本のリスト</h2>
+        <input type="text" id="searchInput" placeholder="本のタイトルを検索">
+        
+        <ul id="bookList"></ul>
+    </div>
+
+    <script>
+        // books.js の getBooks() を呼び出す
+        const books = getBooks();
+        const bookList = document.getElementById("bookList");
+        const searchInput = document.getElementById("searchInput");
+        const searchSection = document.getElementById("searchSection");
+    
+        function displayBooks(filteredBooks) {
+            bookList.innerHTML = "";
+            filteredBooks.forEach(book => {
                 const li = document.createElement("li");
                 li.textContent = book.title;
                 bookList.appendChild(li);
             });
-        </script>
+        }
+    
+        function searchBooks() {
+            const keyword = searchInput.value.toLowerCase();
+            const filteredBooks = books.filter(book => book.title.toLowerCase().includes(keyword));
+            displayBooks(filteredBooks);
+        }
+    
+        function showSearchSection() {
+            searchSection.style.display = "block";
+        }
+    
+        // 初期の本のリストを表示
+        displayBooks(books);
+    </script>
 </body>
 </html>
