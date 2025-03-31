@@ -3,15 +3,14 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https
 import { getStorage, ref, uploadBytes, connectStorageEmulator, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCEesf4nWo-NZ2kin2wqoH41v8yRGe2nAA",
-    authDomain: "hack-u-3.firebaseapp.com",
-    projectId: "hack-u-3",
-    storageBucket: "hack-u-3.firebasestorage.app",
-    messagingSenderId: "1092046712255",
-    appId: "1:1092046712255:web:d5020148df6daaf364850a",
-    measurementId: "G-XZPBY1P44Y"
-};
-
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: "",
+    measurementId: ""
+  };
 
 // Firebase を初期化
 const app = initializeApp(firebaseConfig);
@@ -27,16 +26,15 @@ if (isEmulating) {
 
 // ここまでFirestoreのセッティング
 
-
 // データ処理関数
-async function addReviewToFirestore(bookId, title, imageUrl, average, variance, emotion) {
+async function addReviewToFirestore(bookId, title, imageUrl, x, y, emotion) {
     try {
         const docRef = await addDoc(collection(db, "reviews"), {
             bookId: bookId,
             title: title,
             imageUrl: imageUrl,
-            average: average,
-            variance: variance,
+            x: x,
+            y: y,
             emotion: emotion
         });
         console.log("Document written with ID: ", docRef.id);
@@ -84,6 +82,22 @@ function fileToImage(file, callback) {
     reader.readAsDataURL(file);
 }
 
+async function getBookId() {
+    // bookIdをfirestoreの最大値+1で初期化
+    let bookId = 0;
+    const reviewsRef = collection(db, "reviews");
+    const reviewsQuery = await getDocs(reviewsRef);
+    if (!reviewsQuery.empty) {
+        reviewsQuery.forEach((doc) => {
+            const data = doc.data();
+            if (data.bookId > bookId) {
+                bookId = data.bookId;
+            }
+        });
+    }
+    bookId++;
+    return bookId;
+}
 // 各種イベントリスナー
 
 // タブボタン押下時の処理
@@ -126,13 +140,14 @@ document.getElementById("submit").addEventListener("click", async function (even
     // Storageに格納
     const imageUrl = await addImageToStorage(imageFile);
 
-    // 平均と分散を計算
+    // 平均と分散を用いてx, yを計算
     fileToImage(imageFile, async function (img) {
         const stats = image2vec(img, 16);
-        console.log("stats.stas.normalizedMean:", stats.stats.normalizedMean);
-        console.log("stats.stats.normalizedVariance:", stats.stats.normalizedVariance);
+
+        const bookId = await getBookId(); // bookIdを取得
+
         // Firestoreに格納
-        addReviewToFirestore(10, title, imageUrl, stats.stats.normalizedMean, stats.stats.normalizedVariance, selectedTab); // bookId, title, imageUrl, average, variance, emotion
+        addReviewToFirestore(bookId, title, imageUrl, stats.stats.normalizedMean, stats.stats.normalizedVariance, selectedTab); // bookId, title, imageUrl, x, y, emotion
     });
 
     // 画面を更新
