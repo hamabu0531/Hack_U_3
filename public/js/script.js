@@ -122,61 +122,80 @@ async function getAllBookScores() {
   }
 }
 // 特定のbookIdで表示する関数
-function showBookByBookId(targetBookId) {
-    // bookIdを数値に変換
-    const parsedBookId = Number(targetBookId);
-    
-    // 該当書籍を検索
-    const targetBook = allBooks.find(book => 
-      book.bookId === parsedBookId
-    );
-  
-    if (!targetBook) {
-      createErrorMessage(`該当する書籍が見つかりません（bookId: ${targetBookId}）`);
-      return;
+async function showBooks(calculatedBooks) {
+    const bookListContainer = document.getElementById("book-list");
+
+    if (!bookListContainer) {
+        console.error("表示先の要素が見つかりません。HTML内に <div id='book-list'></div> を追加してください。");
+        return;
     }
-  
-    // 表示クリア
-    document.body.innerHTML = '';
-  
-    // コンテンツ作成
-    const container = document.createElement("div");
-    container.style.maxWidth = "800px";
-    container.style.margin = "40px auto";
-    container.style.padding = "20px";
-  
-    container.innerHTML = `
-      <h1 style="color: #333; margin-bottom: 20px">${targetBook.title}</h1>
-      <img src="${targetBook.imageUrl}" alt="${targetBook.title}" 
-           style="max-width: 300px; display: block; margin-top: 20px;">
-      <div style="margin-top: 20px;">
-        <p>平均評価: ${targetBook.mean}</p>
-        <p>分散: ${targetBook.var}</p>
-      </div>
-    `;
-  
-    document.body.appendChild(container);
-  }
-  
-  // 初期処理
-  document.addEventListener('DOMContentLoaded', async () => {
+
+    calculatedBooks.forEach(calculatedBook => {
+        // allBooksから該当書籍を検索
+        const targetBook = allBooks.find(book => 
+            book.bookId === calculatedBook.id
+        );
+
+        if (!targetBook) {
+            console.error(`該当書籍が存在しません（ID: ${calculatedBook.id}）`);
+            return;
+        }
+
+        // コンテンツ作成
+        const container = document.createElement("div");
+        container.style.maxWidth = "800px";
+        container.style.margin = "40px auto";
+        container.style.padding = "20px";
+        container.style.border = "1px solid #ddd";
+        
+        container.innerHTML = `
+            <h2>${targetBook.title}</h2>
+            <img src="${targetBook.imageUrl}" 
+                 alt="${targetBook.title}" 
+                 style="max-width: 300px; display: block; margin-top: 20px;">
+            <p>Book ID: ${targetBook.bookId}</p>
+        `;
+
+        // HTMLに追加
+        bookListContainer.appendChild(container);
+    });
+}
+
+
+
+// 初期処理
+document.addEventListener('DOMContentLoaded', async () => {
     await getAllBookScores();
     
-    // 使用例: 表示したいbookIdを指定（例: 2）
-    const targetBookId = 1; // ここに取得したいbookIdを入力
-    showBookByBookId(targetBookId);
-  });
-  
-  // エラーメッセージ表示関数
-  function createErrorMessage(message) {
+    const calculatedBooks = [
+        { id: 1 },
+        { id: 2 },
+        { id: 3 },
+        { id: 4 },
+        { id: 5 }
+    ];
+
+    // 書籍情報をすべて表示
+    await showBooks(calculatedBooks);
+});
+
+// エラーメッセージ表示関数
+function createErrorMessage(message) {
     const errorDiv = document.createElement('div');
     errorDiv.textContent = message;
     errorDiv.style.color = '#ff4444';
     errorDiv.style.padding = '15px';
     errorDiv.style.border = '1px solid #ffcccc';
     errorDiv.style.margin = '20px';
-    document.body.appendChild(errorDiv);
-  }
+
+    const bookListContainer = document.getElementById("book-list");
+    
+    if (bookListContainer) {
+        bookListContainer.appendChild(errorDiv);
+    } else {
+        document.body.appendChild(errorDiv);
+    }
+}
 
 
 document.getElementById("imageInput").addEventListener("change", function() {
