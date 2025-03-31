@@ -23,16 +23,27 @@
         <br>
         <button onclick="processImage()">画像を表示</button>
         <br>
+        <h1 id="title">タイトルがここに表示されます</h1>
+<img id="image" src="" alt="画像がここに表示されます" style="max-width:300px;">
+
        
  
         <!-- <button onclick="searchBooks()">検索</button> -->
         <img id="preview">
-        <h1>Book Search</h1>
-        <label for="bookIdInput">Book ID:</label>
-        <input type="text" id="bookIdInput" placeholder="Enter Book ID">
-        <button id="booksearch">Search</button>
+      
+        <ul id="book-list">
+            <!-- Firestoreから取得したデータがここにリストとして表示されます -->
+          </ul>
+          
+          <script type="module" src="script.js"></script> <!-- JavaScriptファイルを読み込み -->
     </div>
-
+    <div class="container">
+        <h1 id="book-title">書籍情報を読み込み中...</h1>
+        <img id="book-image" alt="書籍画像">
+        <div id="error-message" class="error"></div>
+      </div>
+    
+      <script type="module" src="./js/script.js"></script>
     
     
     <!-- 本のリスト表示 -->
