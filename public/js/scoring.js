@@ -1,4 +1,54 @@
 /**
+ * 感情に基づいて座標を計算する関数
+ * @param {string} emotion 感情（"喜"、"怒"、"哀"、"楽"）
+ * @param {number} mean 平均値
+ * @param {number} variance 分散値
+ * @return {Object} 計算された x, y 座標
+ */
+function calculateCoordinatesForEmotion(emotion, mean, variance) {
+    // 座標オフセット値
+    let xOffset = 0, yOffset = 0;
+
+    // 感情に応じたオフセットを設定
+    switch (emotion) {
+        case "喜":
+            // 喜び: 平均大、分散大に移動
+            xOffset = 0.2;
+            yOffset = 0.2;
+            break;
+        case "怒":
+            // 怒り: 平均小、分散大に移動
+            xOffset = -0.2;
+            yOffset = 0.2;
+            break;
+        case "哀":
+            // 哀しみ: 平均小、分散小に移動
+            xOffset = -0.2;
+            yOffset = -0.2;
+            break;
+        case "楽":
+            // 楽しさ: 平均大、分散小に移動
+            xOffset = 0.2;
+            yOffset = -0.2;
+            break;
+        default:
+            // 不明な感情は原点に近い位置
+            console.log("不明な感情:", emotion);
+            break;
+    }
+
+    // 基準値（平均と分散）を元にオフセットを適用
+    let x = mean + xOffset;
+    let y = variance + yOffset;
+
+    // 0-1の範囲に収める（境界値の場合は少しだけ内側にずらす）
+    x = Math.max(0.001, Math.min(0.999, x));
+    y = Math.max(0.001, Math.min(0.999, y));
+
+    return { x, y };
+}
+
+/**
  * 値を0-1の範囲に正規化する関数
  * @param {number} value 正規化する値
  * @param {number} min 最小値
@@ -34,14 +84,12 @@ function calculateStats(vector) {
     const MIN_MEAN = 0;
     const MAX_MEAN = 1;
     const MIN_VARIANCE = 0;
-    // 分散の値が偏るので辺個する必要あり
-    const MAX_VARIANCE = 0.25;
+    const MAX_VARIANCE = 0.1;
 
     const normalizedMean = normalizeValue(mean, MIN_MEAN, MAX_MEAN);
     const normalizedVariance = normalizeValue(variance, MIN_VARIANCE, MAX_VARIANCE);
 
     return {
-        //　正規化前後の平均，分散を返す
         mean,
         variance,
         normalizedMean,
@@ -50,13 +98,16 @@ function calculateStats(vector) {
 }
 
 /**
- * 画像から埋め込みベクトルを生成
+ * 画像と感情から埋め込みベクトルを生成
  * @param {HTMLImageElement} image target image
- * @param {number} dimensions ベクトルの次元数（デフォルト: 16）
+ * @param {string} emotion 感情（"喜"、"怒"、"哀"、"楽"）
  * @return {Object} 埋め込みベクトルとメタデータを含むオブジェクト
  */
-function image2vec(image, dimensions = 16) {
-    console.log('called image2vec func');
+function image2vec(image, emotion = "楽") {
+    console.log('called image2vec func with emotion:', emotion);
+
+    // 固定の次元数
+    const dimensions = 16;
 
     if (!image || !image.naturalWidth) {
         console.error('invalid image: ', image);
@@ -127,31 +178,48 @@ function image2vec(image, dimensions = 16) {
 
         // var, mean
         const stats = calculateStats(finalVector);
+        const coordinates = calculateCoordinatesForEmotion(emotion, stats.normalizedMean, stats.normalizedVariance);
 
-        console.log('mean=', stats.mean, 'var=', stats.variance);
-        console.log('norm mean=', stats.normalizedMean, 'norm var=', stats.normalizedVariance);
+        const adjustedStats = {
+            mean: stats.mean,
+            variance: stats.variance,
+            normalizedMean: stats.normalizedMean,
+            normalizedVariance: stats.normalizedVariance,
+            // 座標値を追加
+            x: coordinates.x,
+            y: coordinates.y
+        };
+
+        console.log('感情:', emotion);
+        console.log('元の値: mean=', stats.mean, 'var=', stats.variance);
+        console.log('正規化値: norm mean=', stats.normalizedMean, 'norm var=', stats.normalizedVariance);
+        console.log('オフセット適用後の座標: x=', coordinates.x, 'y=', coordinates.y);
 
         return {
             vector: finalVector,
-            metadata: metadata,
-            stats: stats
+            metadata: {
+                ...metadata,
+                emotion: emotion
+            },
+            stats: adjustedStats
         };
     } catch (error) {
         console.error('error in embedding vector:', error);
         return {
             vector: Array(dimensions).fill(0),
-            metadata: { error: error.message },
+            metadata: { error: error.message, emotion: emotion },
             stats: {
                 mean: 0,
                 variance: 0,
                 normalizedMean: 0.5,
-                normalizedVariance: 0.5
+                normalizedVariance: 0.5,
+                x: 0.5,
+                y: 0.5
             }
         };
     }
 }
 
-// 分散が0-1の範囲で収まっていない．image2vecDNNは一時凍結
 /**
  * DNNモデルを使用して画像を特徴ベクトルに変換する関数
  * need model.js
@@ -219,18 +287,21 @@ async function image2vecDNN(image, dimensions = 16) {
 
 /**
  * Firestoreコレクションから画像データを取得して、特徴量との最近傍をN件探す
- * @param {Object} embeddingStats 入力画像の特徴統計量 (mean, variance)
- * @param {number} n 取得する最近傍の数 (デフォルト: 2)
- * @return {Promise<Array<Object>>} 最も近いN件のデータ（距離順）
+ * @param {number} mean 入力画像の平均値
+ * @param {number} variance 入力画像の分散値
+ * @param {number} n 取得する最近傍の数 (デフォルト: 5)
+ * @return {Promise<Object>} 最も近いN件のデータ（距離順）と整形されたJSONデータ
  */
-async function findNearestImageInFirestore(embeddingStats, n = 2) {
-    if (!embeddingStats || typeof embeddingStats.mean !== 'number' || typeof embeddingStats.variance !== 'number') {
-        console.error('invalid :', embeddingStats);
-        return null;
+async function findNearestImageInFirestore(mean, variance, n = 2) {
+    if (typeof mean !== 'number' || typeof variance !== 'number') {
+        console.error('invalid parameters: mean=', mean, 'variance=', variance);
+        return {
+            nearest: null,
+            sortedResults: []
+        };
     }
 
     try {
-        const { mean, variance } = embeddingStats;
         console.log(`search firestore: mean=${mean}, variance=${variance}, n=${n}`);
 
         // collection name = 'book_score'
@@ -238,8 +309,11 @@ async function findNearestImageInFirestore(embeddingStats, n = 2) {
         const snapshot = await collectionRef.get();
 
         if (snapshot.empty) {
-            console.log('no daat');
-            return null;
+            console.log('no data');
+            return {
+                nearest: null,
+                sortedResults: []
+            };
         }
 
         const docsWithDistance = [];
@@ -255,20 +329,23 @@ async function findNearestImageInFirestore(embeddingStats, n = 2) {
 
             docsWithDistance.push({
                 id: doc.id,
-                title: data.title,
+                title: data.title || 'No Title',
                 mean: docMean,
                 variance: docVar,
                 distance: distance
             });
         });
 
-        // nearest sort
+        // nearest sort & get result
         docsWithDistance.sort((a, b) => a.distance - b.distance);
-
-        // get n nearest
         const nearestDocs = docsWithDistance.slice(0, n);
 
-        console.log(`find ${n} data:`, nearestDocs);
+        const formattedResults = nearestDocs.map(doc => ({
+            id: doc.id,
+            title: doc.title
+        }));
+
+        console.log(`find ${nearestDocs.length} data:`, nearestDocs);
 
         // log console
         console.group('similarity results');
@@ -277,10 +354,19 @@ async function findNearestImageInFirestore(embeddingStats, n = 2) {
         });
         console.groupEnd();
 
-        // return nearest 
-        return nearestDocs.length > 0 ? nearestDocs[0] : null;
+        console.log('Sorted results in JSON format:');
+        console.log(JSON.stringify(formattedResults, null, 2));
+
+        // return jason & nearest
+        return {
+            nearest: nearestDocs.length > 0 ? nearestDocs[0] : null,
+            sortedResults: formattedResults
+        };
     } catch (error) {
         console.error('Firestoreからの検索中にエラーが発生しました:', error);
-        return null;
+        return {
+            nearest: null,
+            sortedResults: []
+        };
     }
 }
