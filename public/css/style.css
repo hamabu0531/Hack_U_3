@@ -82,28 +82,54 @@ header {
 
 /* ボタン */
 
+/* タブコンテナ */
 .tabs {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
+    gap: 5px; /* ボタン間の隙間 */
+    margin: 20px 0 15px; /* 上 | 左右 | 下 */
+    padding: 0 10px; /* 左右のパディング */
 }
-.tab-button {
+
+/* タブボタン基本スタイル */
+.tabs .tab-button {
+    all: unset; /* ブラウザデフォルトスタイルをリセット */
     flex: 1;
-    padding: 10px;
-    border: none;
-    background-color: #ddd;
+    padding: 12px 15px;
+    border-radius: 8px;
+    background-color: #e0e0e0 !important; /* 詳細度強化 */
     cursor: pointer;
-    transition: 0.3s;
-    margin: 10px;
-    font-size: 25px;
+    transition: 
+        background-color 0.2s ease,
+        transform 0.1s ease;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #444;
+    text-align: center;
+    margin: 0; /* マージンリセット */
 }
-.tab-button:hover {
-    background-color: #0056b3;
+
+/* ホバーエフェクト */
+.tabs .tab-button:hover:not(.active) {
+    background-color: #c0c0c0 !important;
+    transform: translateY(-1px);
 }
-.tab-button.active {
-    background-color: #007bff;
-    color: white;
+
+/* アクティブ状態 */
+.tabs .tab-button.active {
+    background-color: #2c3e50 !important;
+    color: white !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+
+/* 絵文字とテキストの調整 */
+.tabs .tab-button::before {
+    display: inline-block;
+    margin-right: 8px;
+    font-size: 1.2em;
+}
+
+
+
 input, textarea {
     margin: 0;
     padding: 10px;
@@ -199,6 +225,7 @@ button:hover {
     justify-content: center;
     opacity: 1; /* 常に表示 */
     transition: opacity 0.3s ease;
+    margin-top: 20px;
 }
 
 #previewContent {
