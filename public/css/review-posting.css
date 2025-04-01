@@ -11,6 +11,35 @@ body {
     background-position: center;
     background-repeat: no-repeat;
 }
+header, .footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    color: black;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+header {
+    top: 0;
+    font-size: 40px;
+    font-family: fantasy, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-style: italic;
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.header-left {
+    width: 30%;
+    text-align: left;
+}
+.header-right {
+    width: 30%;
+    text-align: right;
+}
+.header-center a {
+    text-decoration: none;
+    color: black;
+}
 .flex-zone {
     display: flex;
     justify-content: center;
@@ -51,6 +80,9 @@ h1 {
     margin: 10px;
     font-size: larger;
 }
+.tab-button:hover {
+    background-color: #0056b3;
+}
 .tab-button.active {
     background-color: #007bff;
     color: white;
@@ -67,7 +99,7 @@ input, textarea {
     width: 70%;
 }
 button {
-    background-color: #007bff;
+    background-color: rgb(59, 59, 59);
     color: white;
     padding: 10px;
     border: none;
@@ -76,6 +108,18 @@ button {
     transition: 0.3s;
 }
 button:hover {
+    background-color: black;
+}
+#submit {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button#submit:hover {
     background-color: #0056b3;
 }
 .review-list {

@@ -10,7 +10,7 @@ const firebaseConfig = {
     messagingSenderId: "",
     appId: "",
     measurementId: ""
-  };
+};
 
 // Firebase を初期化
 const app = initializeApp(firebaseConfig);
@@ -128,7 +128,7 @@ document.getElementById("submit").addEventListener("click", async function (even
 
     let title = document.getElementById("title").value;
     let imageInput = document.getElementById("image");
-    let selectedTab = document.querySelector('.tab-button.active').getAttribute('data-emotion');
+    let selectedEmotion = document.querySelector('.tab-button.active').getAttribute('data-emotion');
     let imageFile = imageInput.files[0];
 
     // 画像やタイトルが選択されていない場合はエラーメッセージを表示
@@ -142,12 +142,12 @@ document.getElementById("submit").addEventListener("click", async function (even
 
     // 平均と分散を用いてx, yを計算
     fileToImage(imageFile, async function (img) {
-        const stats = image2vec(img, 16);
+        const image_data = image2vec(img, selectedEmotion);
 
         const bookId = await getBookId(); // bookIdを取得
 
         // Firestoreに格納
-        addReviewToFirestore(bookId, title, imageUrl, stats.stats.normalizedMean, stats.stats.normalizedVariance, selectedTab); // bookId, title, imageUrl, x, y, emotion
+        addReviewToFirestore(bookId, title, imageUrl, image_data.stats.x_mean, image_data.stats.y_variance, selectedEmotion); // bookId, title, imageUrl, x, y, emotion
     });
 
     // 画面を更新

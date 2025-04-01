@@ -11,7 +11,7 @@ body {
     padding-top: 85px; /* ヘッダーの高さ分余白を作る */
 }
 
-.header, .footer {
+header, .footer {
     width: 100%;
     text-align: center;
     padding: 20px 0;
@@ -19,12 +19,26 @@ body {
     background-color: rgba(255, 255, 255, 0.8);
 }
 
-.header {
+header {
     top: 0;
     font-size: 40px;
     font-family: fantasy, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-style: italic;
     position: fixed;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.header-left {
+    width: 30%;
+}
+.header-right {
+    width: 30%;
+}
+.header-center a {
+    text-decoration: none;
+    color: black;
 }
 
 .footer {
