@@ -2,24 +2,16 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebas
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, connectStorageEmulator, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
-// const firebaseConfig = {
-//     apiKey: "xxx",
-//     authDomain: "xxx",
-//     projectId: "xxx",
-//     storageBucket: "xxx",
-//     messagingSenderId: "xxx",
-//     appId: "xxx",
-//     measurementId: "xxx"
-// };
 const firebaseConfig = {
-    apiKey: "AIzaSyCEesf4nWo-NZ2kin2wqoH41v8yRGe2nAA",
-    authDomain: "hack-u-3.firebaseapp.com",
-    projectId: "hack-u-3",
-    storageBucket: "hack-u-3.firebasestorage.app",
-    messagingSenderId: "1092046712255",
-    appId: "1:1092046712255:web:d5020148df6daaf364850a",
-    measurementId: "G-XZPBY1P44Y"
-  };
+    apiKey: "xxx",
+    authDomain: "xxx",
+    projectId: "xxx",
+    storageBucket: "xxx",
+    messagingSenderId: "xxx",
+    appId: "xxx",
+    measurementId: "xxx"
+};
+
 
 
 // Firebase を初期化
