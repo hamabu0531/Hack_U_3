@@ -6,39 +6,42 @@
  * @return {Object} 計算された x, y 座標
  */
 function calculateCoordinatesForEmotion(emotion, mean, variance) {
-    let meanOffset = 0, varOffset = 0;
+    // 座標オフセット値
+    let xOffset = 0, yOffset = 0;
 
     // 感情に応じたオフセットを設定
     switch (emotion) {
         case "喜":
-            // 喜び:（平均大、分散大）に移動
-            meanOffset = 0.2;
-            varOffset = 0.2;
+            // 喜び: 第一象限（平均大、分散大）に移動
+            xOffset = 0.2;  // 右へ
+            yOffset = 0.2;  // 上へ
             break;
         case "怒":
-            // 怒り:（平均小、分散大）に移動
-            meanOffset = -0.2;
-            varOffset = 0.2;
+            // 怒り: 第四象限（平均大、分散小）に移動
+            xOffset = 0.2;  // 右へ
+            yOffset = -0.2; // 下へ
             break;
         case "哀":
-            // 哀しみ:（平均小、分散小）に移動
-            meanOffset = -0.2;
-            varOffset = -0.2;
+            // 哀しみ: 第三象限（平均小、分散小）に移動
+            xOffset = -0.2; // 左へ
+            yOffset = -0.2; // 下へ
             break;
         case "楽":
-            // 楽しさ:（平均大、分散小）に移動
-            meanOffset = 0.2;
-            varOffset = -0.2;
+            // 楽しさ: 第二象限（平均小、分散大）に移動
+            xOffset = -0.2; // 左へ
+            yOffset = 0.2;  // 上へ
             break;
         default:
-            console.log("invalid:", emotion);
+            // 不明な感情は原点に近い位置
+            console.log("不明な感情:", emotion);
             break;
     }
 
-    let x = mean + meanOffset;
-    let y = variance + varOffset;
+    // 基準値（平均と分散）を元にオフセットを適用
+    let x = mean + xOffset;
+    let y = variance + yOffset;
 
-    // fix border result
+    // 0-1の範囲に収める（境界値の場合は少しだけ内側にずらす）
     x = Math.max(0.001, Math.min(0.999, x));
     y = Math.max(0.001, Math.min(0.999, y));
 
@@ -81,7 +84,10 @@ function calculateStats(vector) {
     const MIN_MEAN = 0;
     const MAX_MEAN = 1;
     const MIN_VARIANCE = 0;
-    const MAX_VARIANCE = 0.25;
+    // 分散の最大値を0.25から0.1に変更
+    // 実際の画像データの分散は理論上の最大値0.25に達することは少なく
+    // より実用的な値として0.1を設定（必要に応じて調整可能）
+    const MAX_VARIANCE = 0.1;
 
     const normalizedMean = normalizeValue(mean, MIN_MEAN, MAX_MEAN);
     const normalizedVariance = normalizeValue(variance, MIN_VARIANCE, MAX_VARIANCE);
@@ -177,17 +183,18 @@ function image2vec(image, emotion = "楽") {
         // var, mean
         const stats = calculateStats(finalVector);
 
-        // add emotion Offset
+        // 感情に基づいて座標を計算
         const coordinates = calculateCoordinatesForEmotion(emotion, stats.normalizedMean, stats.normalizedVariance);
 
+        // 調整された統計値と座標
         const adjustedStats = {
             mean: stats.mean,
             variance: stats.variance,
             normalizedMean: stats.normalizedMean,
             normalizedVariance: stats.normalizedVariance,
             // 座標値を追加
-            x_mean: coordinates.x,
-            y_variance: coordinates.y
+            x: coordinates.x,
+            y: coordinates.y
         };
 
         console.log('感情:', emotion);
@@ -290,12 +297,15 @@ async function image2vecDNN(image, dimensions = 16) {
  * @param {number} mean 入力画像の平均値
  * @param {number} variance 入力画像の分散値
  * @param {number} n 取得する最近傍の数 (デフォルト: 2)
- * @return {Promise<Array<Object>>} 最も近いN件のデータ（距離順）
+ * @return {Promise<Object>} 最も近いN件のデータ（距離順）と整形されたJSONデータ
  */
 async function findNearestImageInFirestore(mean, variance, n = 2) {
     if (typeof mean !== 'number' || typeof variance !== 'number') {
         console.error('invalid parameters: mean=', mean, 'variance=', variance);
-        return null;
+        return {
+            nearest: null,
+            sortedResults: []
+        };
     }
 
     try {
@@ -306,8 +316,11 @@ async function findNearestImageInFirestore(mean, variance, n = 2) {
         const snapshot = await collectionRef.get();
 
         if (snapshot.empty) {
-            console.log('no daat');
-            return null;
+            console.log('no data');
+            return {
+                nearest: null,
+                sortedResults: []
+            };
         }
 
         const docsWithDistance = [];
@@ -323,20 +336,23 @@ async function findNearestImageInFirestore(mean, variance, n = 2) {
 
             docsWithDistance.push({
                 id: doc.id,
-                title: data.title,
+                title: data.title || 'No Title',
                 mean: docMean,
                 variance: docVar,
                 distance: distance
             });
         });
 
-        // nearest sort
+        // nearest sort & get result
         docsWithDistance.sort((a, b) => a.distance - b.distance);
-
-        // get n nearest
         const nearestDocs = docsWithDistance.slice(0, n);
 
-        console.log(`find ${n} data:`, nearestDocs);
+        const formattedResults = nearestDocs.map(doc => ({
+            id: doc.id,
+            title: doc.title
+        }));
+
+        console.log(`find ${nearestDocs.length} data:`, nearestDocs);
 
         // log console
         console.group('similarity results');
@@ -345,10 +361,19 @@ async function findNearestImageInFirestore(mean, variance, n = 2) {
         });
         console.groupEnd();
 
-        // return nearest 
-        return nearestDocs.length > 0 ? nearestDocs[0] : null;
+        console.log('Sorted results in JSON format:');
+        console.log(JSON.stringify(formattedResults, null, 2));
+
+        // 最近傍とJSON形式の結果を返す
+        return {
+            nearest: nearestDocs.length > 0 ? nearestDocs[0] : null,
+            sortedResults: formattedResults
+        };
     } catch (error) {
         console.error('Firestoreからの検索中にエラーが発生しました:', error);
-        return null;
+        return {
+            nearest: null,
+            sortedResults: []
+        };
     }
 }
