@@ -5,13 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>レビュー投稿サイト</title>
-    <link rel="stylesheet" href="/css/review-posting.css">
+    <link rel="stylesheet" href="./css/review-posting.css">
+    <script src="./js/scoring.js"></script>
     <script type="module" src="./js/review-posting.js" defer></script>
 </head>
 
 <body>
     <header>
-        <button id="deleteCollection" type="button">全レビュー削除(デバッグ用)</button>
+        <div class="header-left">
+            <button id="deleteCollection" type="button">全レビュー削除(デバッグ用)</button>
+        </div>
+        <div class="header-center">
+            <a href="./index.html">Image2Books</a>
+        </div>
+        <div class="header-right">
+            <a href="./index.html">
+                <button id="none" type="button">トップページへ戻る</button>
+            </a>
+        </div>
     </header>
     <div class="flex-zone">
         <div id="posting-container">
@@ -28,6 +39,15 @@
                         <img id="preview" src="" alt="Image Preview" style="display: none;">
                     </div>
                 </div>
+
+                <label for="emotion">この本のイメージを教えてください！</label>
+                <div class="tabs">
+                    <button class="tab-button active" data-emotion="喜">😊 喜</button>
+                    <button class="tab-button" data-emotion="怒">😡 怒</button>
+                    <button class="tab-button" data-emotion="哀">😢 哀</button>
+                    <button class="tab-button" data-emotion="楽">😆 楽</button>
+                </div>
+                
                 <button id="submit">投稿</button>
             </div>
     

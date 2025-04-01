@@ -3,15 +3,14 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https
 import { getStorage, ref, uploadBytes, connectStorageEmulator, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 const firebaseConfig = {
-    apiKey: "xxx",
-    authDomain: "xxx",
-    projectId: "xxx",
-    storageBucket: "xxx",
-    messagingSenderId: "xxx",
-    appId: "xxx",
-    measurementId: "xxx"
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: "",
+    measurementId: ""
 };
-
 
 // Firebase を初期化
 const app = initializeApp(firebaseConfig);
@@ -27,16 +26,16 @@ if (isEmulating) {
 
 // ここまでFirestoreのセッティング
 
-
 // データ処理関数
-async function addReviewToFirestore(bookId, title, imageUrl, average, variance) {
+async function addReviewToFirestore(bookId, title, imageUrl, x, y, emotion) {
     try {
         const docRef = await addDoc(collection(db, "reviews"), {
             bookId: bookId,
             title: title,
             imageUrl: imageUrl,
-            average: average,
-            variance: variance,
+            x: x,
+            y: y,
+            emotion: emotion
         });
         console.log("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -45,6 +44,7 @@ async function addReviewToFirestore(bookId, title, imageUrl, average, variance) 
 }
 
 async function addImageToStorage(imageFile) {
+
     if (imageFile) {
         const uniqueId = crypto.randomUUID();
         const storageRef = ref(storage, `images/${uniqueId}.png`);
@@ -53,6 +53,7 @@ async function addImageToStorage(imageFile) {
         }).catch((error) => {
             console.error("Error uploading file: ", error);
         });
+
         const imageUrl = await getDownloadURL(storageRef);
         return imageUrl;
     }
@@ -69,25 +70,34 @@ async function deleteAllReviews() {
     }
 }
 
-async function getImageFromStorage(imageName) {
-    const storage = getStorage(app);
-    const imageRef = ref(storage, `images/${imageName}`); // 画像の参照を取得
-
-    try {
-        // ダウンロードURLを取得
-        const url = await getDownloadURL(imageRef);
-        console.log("画像URL: ", url);
-
-        // URLを使って画像を表示
-        const imgElement = document.createElement('img');
-        imgElement.src = url;
-        document.body.appendChild(imgElement);  // 画像をページに追加
-    } catch (error) {
-        console.error("Error fetching image: ", error);
-    }
+function fileToImage(file, callback) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        const img = new Image();
+        img.onload = () => callback(img);
+        img.onerror = () => console.error("Failed to load image");
+        img.src = event.target.result;
+    };
+    reader.onerror = () => console.error("Failed to read file");
+    reader.readAsDataURL(file);
 }
 
-
+async function getBookId() {
+    // bookIdをfirestoreの最大値+1で初期化
+    let bookId = 0;
+    const reviewsRef = collection(db, "reviews");
+    const reviewsQuery = await getDocs(reviewsRef);
+    if (!reviewsQuery.empty) {
+        reviewsQuery.forEach((doc) => {
+            const data = doc.data();
+            if (data.bookId > bookId) {
+                bookId = data.bookId;
+            }
+        });
+    }
+    bookId++;
+    return bookId;
+}
 // 各種イベントリスナー
 
 // タブボタン押下時の処理
@@ -109,8 +119,16 @@ document.querySelectorAll('.tab-button').forEach(button => {
 document.getElementById("submit").addEventListener("click", async function (event) {
     event.preventDefault();
 
+    // check image2vec function
+    if (typeof image2vec !== 'function') {
+        console.error('image2vec関数が定義されていません');
+        hideLoading();
+        return;
+    }
+
     let title = document.getElementById("title").value;
     let imageInput = document.getElementById("image");
+    let selectedEmotion = document.querySelector('.tab-button.active').getAttribute('data-emotion');
     let imageFile = imageInput.files[0];
 
     // 画像やタイトルが選択されていない場合はエラーメッセージを表示
@@ -119,13 +137,18 @@ document.getElementById("submit").addEventListener("click", async function (even
         return;
     }
 
-    // 画像のスコアを計算する関数を呼ぶ
-
     // Storageに格納
     const imageUrl = await addImageToStorage(imageFile);
 
-    // Firestoreに格納
-    addReviewToFirestore(10, title, imageUrl, 0, 0);
+    // 平均と分散を用いてx, yを計算
+    fileToImage(imageFile, async function (img) {
+        const image_data = image2vec(img, selectedEmotion);
+
+        const bookId = await getBookId(); // bookIdを取得
+
+        // Firestoreに格納
+        addReviewToFirestore(bookId, title, imageUrl, image_data.stats.x_mean, image_data.stats.y_variance, selectedEmotion); // bookId, title, imageUrl, x, y, emotion
+    });
 
     // 画面を更新
     document.getElementById("submitted-container").style.display = "block";
