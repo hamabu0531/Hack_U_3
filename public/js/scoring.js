@@ -34,7 +34,6 @@ function calculateStats(vector) {
     const MIN_MEAN = 0;
     const MAX_MEAN = 1;
     const MIN_VARIANCE = 0;
-    // 分散の値が偏るので辺個する必要あり
     const MAX_VARIANCE = 0.25;
 
     const normalizedMean = normalizeValue(mean, MIN_MEAN, MAX_MEAN);
@@ -151,7 +150,6 @@ function image2vec(image, dimensions = 16) {
     }
 }
 
-// 分散が0-1の範囲で収まっていない．image2vecDNNは一時凍結
 /**
  * DNNモデルを使用して画像を特徴ベクトルに変換する関数
  * need model.js
@@ -219,18 +217,19 @@ async function image2vecDNN(image, dimensions = 16) {
 
 /**
  * Firestoreコレクションから画像データを取得して、特徴量との最近傍をN件探す
- * @param {Object} embeddingStats 入力画像の特徴統計量 (mean, variance)
+ * func(mean, var, n)で受け取る
+ * @param {number} mean 入力画像の平均値
+ * @param {number} variance 入力画像の分散値
  * @param {number} n 取得する最近傍の数 (デフォルト: 2)
  * @return {Promise<Array<Object>>} 最も近いN件のデータ（距離順）
  */
-async function findNearestImageInFirestore(embeddingStats, n = 2) {
-    if (!embeddingStats || typeof embeddingStats.mean !== 'number' || typeof embeddingStats.variance !== 'number') {
-        console.error('invalid :', embeddingStats);
+async function findNearestImageInFirestore(mean, variance, n = 2) {
+    if (typeof mean !== 'number' || typeof variance !== 'number') {
+        console.error('invalid parameters: mean=', mean, 'variance=', variance);
         return null;
     }
 
     try {
-        const { mean, variance } = embeddingStats;
         console.log(`search firestore: mean=${mean}, variance=${variance}, n=${n}`);
 
         // collection name = 'book_score'
@@ -280,7 +279,7 @@ async function findNearestImageInFirestore(embeddingStats, n = 2) {
         // return nearest 
         return nearestDocs.length > 0 ? nearestDocs[0] : null;
     } catch (error) {
-        console.error('Firestoreからの検索中にエラーが発生しました:', error);
+        console.error('error in firestore:', error);
         return null;
     }
 }
