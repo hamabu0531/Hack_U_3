@@ -189,8 +189,8 @@ function image2vec(image, emotion = "楽") {
             normalizedMean: stats.normalizedMean,
             normalizedVariance: stats.normalizedVariance,
             // 座標値を追加
-            x_mean: coordinates.x,
-            y_variance: coordinates.y
+            x: coordinates.x,
+            y: coordinates.y
         };
 
         console.log('感情:', emotion);
