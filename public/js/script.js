@@ -6,11 +6,11 @@ document.getElementById("imageInput").addEventListener("change", function() {
 
     const reader = new FileReader();
     
-    reader.onload = function(event) {
-        const imgElement = document.getElementById("preview");
-        imgElement.src = event.target.result;
-        imgElement.style.display = "block"; 
-    };
+    // reader.onload = function(event) {
+    //     const imgElement = document.getElementById("preview");
+    //     imgElement.src = event.target.result;
+    //     imgElement.style.display = "block"; 
+    // };
 
     reader.readAsDataURL(file); 
 });
@@ -31,6 +31,19 @@ document.querySelectorAll('.tab-button').forEach(button => {
   });
 });
 
+
+function fileToImage(file, callback) {
+  const reader = new FileReader();
+  reader.onload = function (event) {
+      const img = new Image();
+      img.onload = () => callback(img);
+      img.onerror = () => console.error("Failed to load image");
+      img.src = event.target.result;
+  };
+  reader.onerror = () => console.error("Failed to read file");
+  reader.readAsDataURL(file);
+}
+
 // 投稿ボタン押下時の処理
 document.getElementById("submit").addEventListener("click", async function (event) {
   event.preventDefault();
@@ -42,31 +55,44 @@ document.getElementById("submit").addEventListener("click", async function (even
       return;
   }
 
-  let title = document.getElementById("title").value;
-  let imageInput = document.getElementById("image");
+
+  let imageInput = document.getElementById("imageInput");
   let selectedEmotion = document.querySelector('.tab-button.active').getAttribute('data-emotion');
   let imageFile = imageInput.files[0];
 
   // 画像やタイトルが選択されていない場合はエラーメッセージを表示
-  if (!imageFile || !title) {
+  if (!imageFile ) {
       alert("タイトルと画像を選択してください。");
       return;
   }
 
-  // Storageに格納
-  const imageUrl = await addImageToStorage(imageFile);
+
 
   // 平均と分散を用いてx, yを計算
   fileToImage(imageFile, async function (img) {
-      const image_data = image2vec(img, selectedEmotion);
+      const embeddingResult = image2vec(img, selectedEmotion);
+      console.log('画像と感情から埋め込みベクトルを生成しました:', embeddingResult);
+      const { normalizedMean, normalizedVariance, x: x_mean, y: y_variance } = embeddingResult.stats;
+      console.log('感情オフセット適用後の座標:', {
+        emotion: selectedEmotion,
+        normalizedMean: embeddingResult.stats.normalizedMean,
+        normalizedVariance: embeddingResult.stats.normalizedVariance,
+        // グラフ表示，firestore格納用
+        x_mean: embeddingResult.stats.x,
+        y_variance: embeddingResult.stats.y
+    });
+    const searchResult = await findNearestImageInFirestore(x_mean, y_variance, 2);
+                const nearestImage = searchResult.nearest;
+                const sortedResults = searchResult.sortedResults;
 
-      const bookId = await getBookId(); // bookIdを取得
+                console.log('類似度順のソート結果:', sortedResults);
 
-      // Firestoreに格納
-      addReviewToFirestore(bookId, title, imageUrl, image_data.stats.x, image_data.stats.y, selectedEmotion); // bookId, title, imageUrl, x, y, emotion
+
+     
   });
 
-  // 画面を更新
-  document.getElementById("submitted-container").style.display = "block";
-  document.getElementById("posting-container").style.display = "none";
+
 });
+
+
+
