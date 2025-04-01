@@ -123,18 +123,7 @@ async function getAllCoordinate() {
 
 // 初期処理
 document.addEventListener('DOMContentLoaded', async () => {
-    await getAllBookScores();
-    
-    const calculatedBooks = [
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-        { id: 4 },
-        { id: 5 }
-    ];
 
-    // 書籍情報をすべて表示
-    await showBooks(calculatedBooks);
     await getAllCoordinate();
     // x と y の値をそれぞれ抽出
     const xValues = allcoordinate.map(book => book.x);
