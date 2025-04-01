@@ -1,0 +1,25 @@
+{
+    "images": [
+        {
+            "title": "羅生門",
+            "path": "sample1.jpg",
+            "x": 0.2,
+            "y": 0.8,
+            "emotion": "楽"
+        },
+        {
+            "title": "地獄変",
+            "path": "sample2.jpg",
+            "x": 0.5,
+            "y": 0.5,
+            "emotion": "喜"
+        },
+        {
+            "title": "蜘蛛の糸",
+            "path": "sample3.jpg",
+            "x": 0.8,
+            "y": 0.2,
+            "emotion": "悲"
+        }
+    ]
+}
