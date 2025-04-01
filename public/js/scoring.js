@@ -85,7 +85,6 @@ function calculateStats(vector) {
     const MAX_MEAN = 1;
     const MIN_VARIANCE = 0;
     // 分散の最大値を0.25から0.1に変更
-    // 実際の画像データの分散は理論上の最大値0.25に達することは少なく
     // より実用的な値として0.1を設定（必要に応じて調整可能）
     const MAX_VARIANCE = 0.1;
 
@@ -182,19 +181,16 @@ function image2vec(image, emotion = "楽") {
 
         // var, mean
         const stats = calculateStats(finalVector);
-
-        // 感情に基づいて座標を計算
         const coordinates = calculateCoordinatesForEmotion(emotion, stats.normalizedMean, stats.normalizedVariance);
 
-        // 調整された統計値と座標
         const adjustedStats = {
             mean: stats.mean,
             variance: stats.variance,
             normalizedMean: stats.normalizedMean,
             normalizedVariance: stats.normalizedVariance,
             // 座標値を追加
-            x: coordinates.x,
-            y: coordinates.y
+            x_mean: coordinates.x,
+            y_variance: coordinates.y
         };
 
         console.log('感情:', emotion);
@@ -296,7 +292,7 @@ async function image2vecDNN(image, dimensions = 16) {
  * Firestoreコレクションから画像データを取得して、特徴量との最近傍をN件探す
  * @param {number} mean 入力画像の平均値
  * @param {number} variance 入力画像の分散値
- * @param {number} n 取得する最近傍の数 (デフォルト: 2)
+ * @param {number} n 取得する最近傍の数 (デフォルト: 5)
  * @return {Promise<Object>} 最も近いN件のデータ（距離順）と整形されたJSONデータ
  */
 async function findNearestImageInFirestore(mean, variance, n = 2) {
@@ -364,7 +360,7 @@ async function findNearestImageInFirestore(mean, variance, n = 2) {
         console.log('Sorted results in JSON format:');
         console.log(JSON.stringify(formattedResults, null, 2));
 
-        // 最近傍とJSON形式の結果を返す
+        // return jason & nearest
         return {
             nearest: nearestDocs.length > 0 ? nearestDocs[0] : null,
             sortedResults: formattedResults
