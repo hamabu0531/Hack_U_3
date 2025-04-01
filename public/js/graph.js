@@ -39,64 +39,6 @@ if (isEmulating) {
 
 
 
-let allBooks = []; // 全書籍データを保持する変数
-
-// 全データ取得関数
-async function getAllBookScores() {
-  try {
-    const bookScoreRef = collection(db, "reviews");
-    const querySnapshot = await getDocs(bookScoreRef);
-    
-    allBooks = querySnapshot.docs.map(doc => ({
-      id: doc.bookId,
-      ...doc.data()
-    }));
-    
-    console.log('全データ取得完了:', allBooks);
-    
-  } catch (error) {
-    console.error("データ取得エラー:", error);
-    createErrorMessage('データの取得に失敗しました');
-  }
-}
-// 特定のbookIdで表示する関数
-async function showBooks(calculatedBooks) {
-    const bookListContainer = document.getElementById("book-list");
-
-    if (!bookListContainer) {
-        console.error("表示先の要素が見つかりません。HTML内に <div id='book-list'></div> を追加してください。");
-        return;
-    }
-
-    // コンテナをクリア
-    bookListContainer.innerHTML = '';
-
-    calculatedBooks.forEach(calculatedBook => {
-        // allBooksから該当書籍を検索
-        const targetBook = allBooks.find(book => book.bookId === calculatedBook.id);
-
-        if (!targetBook) {
-            console.error(`該当書籍が存在しません（ID: ${calculatedBook.id}）`);
-            return;
-        }
-
-        // 書籍カード作成
-        const container = document.createElement("div");
-        container.className = "book-item";
-
-        // HTMLコンテンツを設定
-        container.innerHTML = `
-            <h2 class="book-title">${targetBook.title}</h2>
-            <img src="${targetBook.imageUrl}" alt="${targetBook.title}" class="book-image">
-            <p>Book ID: ${targetBook.bookId}</p>
-        `;
-
-        // HTMLに追加
-        bookListContainer.appendChild(container);
-    });
-}
-
-
 
 // ここから、グラフ表示
 
@@ -158,6 +100,7 @@ const data = allcoordinate.map((book) => ({
 // Chart.jsでグラフを描画
 const ctx = canvas.getContext('2d');
 
+
 const chart = new Chart(ctx, {
     type: "scatter",
     data: {
@@ -167,73 +110,84 @@ const chart = new Chart(ctx, {
           data: data,
           backgroundColor: "blue",
           pointRadius: 10,
-      
         },
+        {
+          label: "x=0.5の直線",
+          data: [{ x: 0.5, y: 0 }, { x: 0.5, y: 1 }],
+          borderColor: "black",
+          borderWidth: 2,
+          showLine: true,
+          fill: false,
+          pointRadius: 0,
+        },
+        {
+          label: "y=0.5の直線",
+          data: [{ x: 0, y: 0.5 }, { x: 1, y: 0.5 }],
+          borderColor: "black",
+          borderWidth: 2,
+          showLine: true,
+          fill: false,
+          pointRadius: 0,
+        }
       ],
     },
     options: {
       scales: {
         x: {
+          type: "linear",
+          position: "bottom",
           min: 0,
           max: 1,
           grid: { display: true },
         },
         y: {
+          type: "linear",
+          position: "left",
           min: 0,
           max: 1,
           grid: { display: true },
         },
       },
       plugins: {
-        title: {
-          display: true,
-          text: "ポイントの散布図 (X軸とY軸は0〜1)",
-        },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              const item = context.dataset.data[context.dataIndex];
-              return [`タイトル: ${item.title}`, `画像URL: ${item.imageUrl}`];
-            },
-          },
-        },
-        annotation: {
-          annotations: {
-            verticalLine: {
-              type: "line",
-              scaleID: "x",
-              xMin: 0.5,
-              xMax: 0.5,
-              yMin: 0,
-              yMax: 1,
-              borderColor: "red",
-              borderWidth: 2,
-              label: {
-                content: "X=0.5",
-                enabled: true,
-                position: "top",
-              },
-            },
-            horizontalLine: {
-              type: "line",
-              scaleID: "y",
-              xMin: 0,
-              xMax: 1,
-              yMin: 0.5,
-              yMax: 0.5,
-              borderColor: "black",
-              borderWidth: 2,
-              label: {
-                content: "Y=0.5",
-                enabled: true,
-                position: "right",
-              },
-            },
-          },
-        },
+
       },
+      animation: false, // アニメーションをオフにするとラベルが適切に描画されやすい
     },
-  });
+    plugins: [{
+        id: 'customLabels',
+        afterDraw: (chart) => {
+          const ctx = chart.ctx;
+          ctx.save();
+          ctx.font = "14px Arial";
+          ctx.fillStyle = "black";
+  
+          // 喜: 左上
+          let x1Pos = chart.scales.x.getPixelForValue(0);
+          let y1Pos = chart.scales.y.getPixelForValue(1);
+          ctx.fillText("喜", x1Pos + 10, y1Pos - 10);
+  
+          // 怒: 右上
+          let x2Pos = chart.scales.x.getPixelForValue(1);
+          let y2Pos = chart.scales.y.getPixelForValue(1);
+          ctx.fillText("怒", x2Pos - 20, y2Pos - 10);
+  
+          // 哀: 左下
+          let x3Pos = chart.scales.x.getPixelForValue(0);
+          let y3Pos = chart.scales.y.getPixelForValue(0);
+          ctx.fillText("哀", x3Pos + 10, y3Pos + 20);
+  
+          // 楽: 右下
+          let x4Pos = chart.scales.x.getPixelForValue(1);
+          let y4Pos = chart.scales.y.getPixelForValue(0);
+          ctx.fillText("楽", x4Pos - 20, y4Pos + 20);
+  
+          ctx.restore();
+        }
+      }]
+});
+
+
+
   
   // マウスホバー時に画像とタイトルを表示する機能
 // JavaScript修正
