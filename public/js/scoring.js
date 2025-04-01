@@ -1,4 +1,51 @@
 /**
+ * 感情に基づいて座標を計算する関数
+ * @param {string} emotion 感情（"喜"、"怒"、"哀"、"楽"）
+ * @param {number} mean 平均値
+ * @param {number} variance 分散値
+ * @return {Object} 計算された x, y 座標
+ */
+function calculateCoordinatesForEmotion(emotion, mean, variance) {
+    let meanOffset = 0, varOffset = 0;
+
+    // 感情に応じたオフセットを設定
+    switch (emotion) {
+        case "喜":
+            // 喜び:（平均大、分散大）に移動
+            meanOffset = 0.2;
+            varOffset = 0.2;
+            break;
+        case "怒":
+            // 怒り:（平均小、分散大）に移動
+            meanOffset = -0.2;
+            varOffset = 0.2;
+            break;
+        case "哀":
+            // 哀しみ:（平均小、分散小）に移動
+            meanOffset = -0.2;
+            varOffset = -0.2;
+            break;
+        case "楽":
+            // 楽しさ:（平均大、分散小）に移動
+            meanOffset = 0.2;
+            varOffset = -0.2;
+            break;
+        default:
+            console.log("invalid:", emotion);
+            break;
+    }
+
+    let x = mean + meanOffset;
+    let y = variance + varOffset;
+
+    // fix border result
+    x = Math.max(0.001, Math.min(0.999, x));
+    y = Math.max(0.001, Math.min(0.999, y));
+
+    return { x, y };
+}
+
+/**
  * 値を0-1の範囲に正規化する関数
  * @param {number} value 正規化する値
  * @param {number} min 最小値
@@ -49,13 +96,16 @@ function calculateStats(vector) {
 }
 
 /**
- * 画像から埋め込みベクトルを生成
+ * 画像と感情から埋め込みベクトルを生成
  * @param {HTMLImageElement} image target image
- * @param {number} dimensions ベクトルの次元数（デフォルト: 16）
+ * @param {string} emotion 感情（"喜"、"怒"、"哀"、"楽"）
  * @return {Object} 埋め込みベクトルとメタデータを含むオブジェクト
  */
-function image2vec(image, dimensions = 16) {
-    console.log('called image2vec func');
+function image2vec(image, emotion = "楽") {
+    console.log('called image2vec func with emotion:', emotion);
+
+    // 固定の次元数
+    const dimensions = 16;
 
     if (!image || !image.naturalWidth) {
         console.error('invalid image: ', image);
@@ -127,24 +177,44 @@ function image2vec(image, dimensions = 16) {
         // var, mean
         const stats = calculateStats(finalVector);
 
-        console.log('mean=', stats.mean, 'var=', stats.variance);
-        console.log('norm mean=', stats.normalizedMean, 'norm var=', stats.normalizedVariance);
+        // add emotion Offset
+        const coordinates = calculateCoordinatesForEmotion(emotion, stats.normalizedMean, stats.normalizedVariance);
+
+        const adjustedStats = {
+            mean: stats.mean,
+            variance: stats.variance,
+            normalizedMean: stats.normalizedMean,
+            normalizedVariance: stats.normalizedVariance,
+            // 座標値を追加
+            x_mean: coordinates.x,
+            y_variance: coordinates.y
+        };
+
+        console.log('感情:', emotion);
+        console.log('元の値: mean=', stats.mean, 'var=', stats.variance);
+        console.log('正規化値: norm mean=', stats.normalizedMean, 'norm var=', stats.normalizedVariance);
+        console.log('オフセット適用後の座標: x=', coordinates.x, 'y=', coordinates.y);
 
         return {
             vector: finalVector,
-            metadata: metadata,
-            stats: stats
+            metadata: {
+                ...metadata,
+                emotion: emotion
+            },
+            stats: adjustedStats
         };
     } catch (error) {
         console.error('error in embedding vector:', error);
         return {
             vector: Array(dimensions).fill(0),
-            metadata: { error: error.message },
+            metadata: { error: error.message, emotion: emotion },
             stats: {
                 mean: 0,
                 variance: 0,
                 normalizedMean: 0.5,
-                normalizedVariance: 0.5
+                normalizedVariance: 0.5,
+                x: 0.5,
+                y: 0.5
             }
         };
     }
@@ -217,7 +287,6 @@ async function image2vecDNN(image, dimensions = 16) {
 
 /**
  * Firestoreコレクションから画像データを取得して、特徴量との最近傍をN件探す
- * func(mean, var, n)で受け取る
  * @param {number} mean 入力画像の平均値
  * @param {number} variance 入力画像の分散値
  * @param {number} n 取得する最近傍の数 (デフォルト: 2)
@@ -279,7 +348,7 @@ async function findNearestImageInFirestore(mean, variance, n = 2) {
         // return nearest 
         return nearestDocs.length > 0 ? nearestDocs[0] : null;
     } catch (error) {
-        console.error('error in firestore:', error);
+        console.error('Firestoreからの検索中にエラーが発生しました:', error);
         return null;
     }
 }
