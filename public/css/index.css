@@ -5,13 +5,14 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: url('../image/library.jpg') no-repeat center center/cover;
+    background: url('../image/kaboompics_books-on-a-bookcase-marble-shelves-27345.jpg') no-repeat center center/cover;
     background-attachment: fixed;
     font-family: Arial, sans-serif;
     padding-top: 85px; /* ヘッダーの高さ分余白を作る */
+    user-select: none;
 }
 
-header, .footer {
+header, footer {
     width: 100%;
     text-align: center;
     padding: 20px 0;
@@ -41,7 +42,7 @@ header {
     color: black;
 }
 
-.footer {
+footer {
     bottom: 0;
     font-size: 20px;
     background-color: rgba(255, 255, 255, 0.5);
@@ -81,7 +82,16 @@ header {
     text-align: center;
     background-color: white;
     width: 100%;
-    border-radius: 10px;
+    gap: 40px;
+}
+
+.desc-container p {
+    font-size: 20px;
+    color: black;
+}
+
+.desc-container img {
+    max-width: 50%;
 }
 
 .buttons {

@@ -6,15 +6,19 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-image: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fGJsdXUlMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTY4NTQ1NzE5Ng&ixlib=rb-4.0.3&q=80&w=1080');
+    background-image: url('../image/kaboompics_books-corrective-glasses-flowers-21622.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
 }
-header, .footer {
+header, footer {
     width: 100%;
     text-align: center;
-    padding: 20px 0;
+    position: fixed;
+    padding: 10px 0;
     color: black;
     background-color: rgba(255, 255, 255, 0.8);
 }
@@ -23,28 +27,63 @@ header {
     font-size: 40px;
     font-family: fantasy, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-style: italic;
-    position: fixed;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    height: 60px;
 }
 .header-left {
     width: 30%;
     text-align: left;
+    display: flex;
 }
 .header-right {
     width: 30%;
     text-align: right;
+    justify-content: right;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+.header-right a {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    height: 40px;
+    text-decoration: none;
+}
+.searchButton {
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    padding: 8px 20px;
+    border-width: 10px;
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: large;
+}
+.searchButton:hover {
+    background-color: #007bff;
+    color: white;
+    border: 2px solid #0056b3;
+}
+.topButton {
+    font-size: large;
 }
 .header-center a {
     text-decoration: none;
     color: black;
 }
+footer {
+    bottom: 0;
+}
 .flex-zone {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
 }
 #posting-container {
     background: rgba(181, 255, 230, 0.8);
@@ -78,7 +117,7 @@ h1 {
     cursor: pointer;
     transition: 0.3s;
     margin: 10px;
-    font-size: larger;
+    font-size: 25px;
 }
 .tab-button:hover {
     background-color: #0056b3;
@@ -86,10 +125,6 @@ h1 {
 .tab-button.active {
     background-color: #007bff;
     color: white;
-}
-form {
-    display: flex;
-    flex-direction: column;
 }
 input, textarea {
     margin: 0;

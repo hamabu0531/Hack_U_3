@@ -12,6 +12,7 @@ const firebaseConfig = {
     measurementId: ""
 };
 
+
 // Firebase を初期化
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -56,17 +57,6 @@ async function addImageToStorage(imageFile) {
 
         const imageUrl = await getDownloadURL(storageRef);
         return imageUrl;
-    }
-}
-
-async function deleteAllReviews() {
-    try {
-        const querySnapshot = await getDocs(collection(db, "reviews"));
-        const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
-        await Promise.all(deletePromises);
-        console.log("すべてのレビューを削除しました");
-    } catch (error) {
-        console.error("削除中にエラーが発生しました:", error);
     }
 }
 
@@ -147,20 +137,12 @@ document.getElementById("submit").addEventListener("click", async function (even
         const bookId = await getBookId(); // bookIdを取得
 
         // Firestoreに格納
-        addReviewToFirestore(bookId, title, imageUrl, image_data.stats.x_mean, image_data.stats.y_variance, selectedEmotion); // bookId, title, imageUrl, x, y, emotion
+        addReviewToFirestore(bookId, title, imageUrl, image_data.stats.x, image_data.stats.y, selectedEmotion); // bookId, title, imageUrl, x, y, emotion
     });
 
     // 画面を更新
     document.getElementById("submitted-container").style.display = "block";
     document.getElementById("posting-container").style.display = "none";
-});
-
-// 削除ボタン押下時の処理
-document.getElementById("deleteCollection").addEventListener("click", async (event) => {
-    event.preventDefault();
-    if (confirm("本当にすべてのレビューを削除しますか？")) {
-        await deleteAllReviews();
-    }
 });
 
 // 画像選択時の処理
