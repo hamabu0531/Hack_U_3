@@ -310,7 +310,7 @@ document.getElementById("submit").addEventListener("click", async function (even
                 // 書籍情報をすべて表示
                 await showBooks(sortedResults);
      
-  });
+ 
 
   await getAllCoordinate();
   // x と y の値をそれぞれ抽出
@@ -341,8 +341,7 @@ const data = allcoordinate.map((book) => ({
   y: book.y,
   title: book.title,      // タイトルを追加
   imageUrl: book.imageUrl, // 画像URLを追加
-  new_x : x_mean,
-  new_y : y_variance
+
 }));
 
 // Chart.jsでグラフを描画
@@ -379,7 +378,11 @@ const chart = new Chart(ctx, {
       },
       {
         label: "赤い点", // 新しい点用のデータセット
-        data: [{ x: new_x, y: new_y }], // 新しい赤い点の座標
+        // data: [{ x: 0.25, y: 0.25 }], // 新しい赤い点の座標
+        data: [{ 
+          x: embeddingResult.stats.x, 
+          y: embeddingResult.stats.y 
+        }], 
         backgroundColor: "red", // 赤色に設定
         pointRadius: 10, // 点の大きさ
       }
@@ -439,7 +442,7 @@ const chart = new Chart(ctx, {
       }
     }]
 });
-
+});
 
 
 
