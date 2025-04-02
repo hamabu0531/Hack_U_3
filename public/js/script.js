@@ -2,27 +2,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebas
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc ,getDoc} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, connectStorageEmulator, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
-// const firebaseConfig = {
-//     apiKey: "xxx",
-//     authDomain: "xxx",
-//     projectId: "xxx",
-//     storageBucket: "xxx",
-//     messagingSenderId: "xxx",
-//     appId: "xxx",
-//     measurementId: "xxx"
-// };
 const firebaseConfig = {
-    apiKey: "AIzaSyCEesf4nWo-NZ2kin2wqoH41v8yRGe2nAA",
-    authDomain: "hack-u-3.firebaseapp.com",
-    projectId: "hack-u-3",
-    storageBucket: "hack-u-3.firebasestorage.app",
-    messagingSenderId: "1092046712255",
-    appId: "1:1092046712255:web:d5020148df6daaf364850a",
-    measurementId: "G-XZPBY1P44Y"
-  };
-
-
-
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: "",
+  measurementId: ""
+};
 
 // Firebase を初期化
 const app = initializeApp(firebaseConfig);
@@ -532,6 +520,40 @@ document.getElementById("left-container").addEventListener("mouseleave", () => {
   preview.style.opacity = '0'; // プレビューを非表示
   // setTimeout(() => preview.style.display = 'none', 300);
 });
+
+// 対応した分析情報を表示
+let comment = "";
+
+if(embeddingX <= 0.7 && embeddingX >= 0.3 && embeddingY <= 0.7 && embeddingY >= 0.3){
+  comment = "特定の感情が突出しておらず、バランスの取れた多様な本が推薦されています。";
+}
+else if(embeddingX >= 0.7 && embeddingY <= 0.3){
+  comment = "分析の結果、楽しさが強く表れており、気軽に読めるワクワクする本が推薦されています。";
+}
+else if(embeddingX >= 0.7 && embeddingY >= 0.7){
+  comment = "分析の結果、喜びが強く表れており、明るく前向きなテーマの本が推薦されています。";
+}
+else if(embeddingX <= 0.3 && embeddingY >= 0.7){
+  comment = "分析の結果、怒りが強く表れており、情熱的で力強いテーマの本が推薦されています。";
+}
+else if(embeddingX <= 0.3 && embeddingY <= 0.3){
+  comment = "分析の結果、悲しみが強く表れており、感動的で心に響く本が推薦されています。";
+}
+else if(embeddingX < 0.3 && embeddingY > 0.3 && embeddingY < 0.7){
+  comment = "分析の結果、悲しみと怒りが強く表れており、重厚なストーリーの本が推薦されています。";
+}
+else if(embeddingX > 0.7 && embeddingY > 0.3 && embeddingY < 0.7){
+  comment = "分析の結果、楽しさと喜びが強く表れており、心が弾む明るい本が推薦されています。";
+}
+else if(embeddingY < 0.3 && embeddingX > 0.3 && embeddingX < 0.7){
+  comment = "分析の結果、切なさと楽しさが混ざり合っており、感情豊かな物語が推薦されています。";
+}
+else if(embeddingY > 0.7 && embeddingX > 0.3 && embeddingX < 0.7){
+  comment = "分析の結果、喜びと怒りが交差しており、熱い展開のドラマチックな本が推薦されています。";
+}
+
+
+document.getElementById("comment").innerHTML = comment;
 
 });
 
