@@ -14,16 +14,16 @@ function calculateCoordinatesForEmotion(emotion, mean, variance) {
         case "喜":
             // 喜び: 平均大、分散大に移動
             xOffset = 0.2;
-            yOffset = 0.2;
+            yOffset = 0.3;
             break;
         case "怒":
             // 怒り: 平均小、分散大に移動
             xOffset = -0.2;
-            yOffset = 0.2;
+            yOffset = 0.3;
             break;
         case "哀":
             // 哀しみ: 平均小、分散小に移動
-            xOffset = -0.2;
+            xOffset = -0.3;
             yOffset = -0.2;
             break;
         case "楽":
@@ -84,7 +84,7 @@ function calculateStats(vector) {
     const MIN_MEAN = 0;
     const MAX_MEAN = 1;
     const MIN_VARIANCE = 0;
-    const MAX_VARIANCE = 0.1;
+    const MAX_VARIANCE = 0.05;
 
     const normalizedMean = normalizeValue(mean, MIN_MEAN, MAX_MEAN);
     const normalizedVariance = normalizeValue(variance, MIN_VARIANCE, MAX_VARIANCE);
