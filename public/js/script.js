@@ -260,6 +260,9 @@ function fileToImage(file, callback) {
   reader.readAsDataURL(file);
 }
 
+// グローバル変数を定義
+let embeddingX, embeddingY;
+
 // 投稿ボタン押下時の処理
 document.getElementById("submit").addEventListener("click", async function (event) {
   event.preventDefault();
@@ -288,7 +291,9 @@ document.getElementById("submit").addEventListener("click", async function (even
   fileToImage(imageFile, async function (img) {
       const embeddingResult = image2vec(img, selectedEmotion);
       console.log('画像と感情から埋め込みベクトルを生成しました:', embeddingResult);
-      
+          // グローバル変数に格納
+    embeddingX = embeddingResult.stats.x;
+    embeddingY = embeddingResult.stats.y;
       console.log('感情オフセット適用後の座標:', {
         emotion: selectedEmotion,
         normalizedMean: embeddingResult.stats.normalizedMean,
@@ -376,16 +381,17 @@ const chart = new Chart(ctx, {
         fill: false,
         pointRadius: 0,
       },
-      // {
-      //   label: "赤い点", // 新しい点用のデータセット
-      //   // data: [{ x: 0.25, y: 0.25 }], // 新しい赤い点の座標
-      //   data: [{ 
-      //     x: embeddingResult.stats.x, 
-      //     y: embeddingResult.stats.y 
-      //   }], 
-      //   backgroundColor: "red", // 赤色に設定
-      //   pointRadius: 10, // 点の大きさ
-      // }
+      {
+        label: "赤い点", // 新しい点用のデータセット
+        // data: [{ x: 0.25, y: 0.25 }], // 新しい赤い点の座標
+        // data: [{ 
+        //   x: embeddingResult.stats.x, 
+        //   y: embeddingResult.stats.y 
+        // }], 
+        data: [{ x: embeddingX, y: embeddingY }], // グローバル変数を使用
+        backgroundColor: "red", // 赤色に設定
+        pointRadius: 10, // 点の大きさ
+      }
     ],
   },
   options: {
