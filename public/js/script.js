@@ -467,7 +467,10 @@ canvas.addEventListener("mousemove", (e) => {
 
   if (points.length) {
     const item = data[points[0].index];
-    
+    if (points[0].datasetIndex === 3) {
+      preview.style.opacity = '0';
+      return;
+    }
     // プレビュー内容を更新
     previewContent.innerHTML = `
       <h4>${item.title}</h4>
@@ -483,36 +486,36 @@ canvas.addEventListener("mousemove", (e) => {
   }
 });
 
-// マウスがポイントに乗っている間は画像を表示し続ける
-canvas.addEventListener("mouseenter", (e) => {
-  const points = chart.getElementsAtEventForMode(e, 'nearest', {intersect: true}, false);
-  if (points.length) {
-    const item = data[points[0].index];
-    const preview = document.getElementById("imagePreview");
-    const previewContent = document.getElementById("previewContent");
-    if (points[0].datasetIndex === 3) {
-      preview.style.opacity = '0';
-      return;
-    }
-    // プレビュー内容を更新
-    previewContent.innerHTML = `
-      <h4>${item.title}</h4>
-      <img src="${item.imageUrl}" 
-           alt="${item.title}" 
-           style="max-width:${Math.min(leftContainerWidth * 0.4, 300)}px">
-    `;
+// // マウスがポイントに乗っている間は画像を表示し続ける
+// canvas.addEventListener("mouseenter", (e) => {
+//   const points = chart.getElementsAtEventForMode(e, 'nearest', {intersect: true}, false);
+//   if (points.length) {
+//     const item = data[points[0].index];
+//     const preview = document.getElementById("imagePreview");
+//     const previewContent = document.getElementById("previewContent");
+//     if (points[0].datasetIndex === 3) {
+//       preview.style.opacity = '0';
+//       return;
+//     }
+//     // プレビュー内容を更新
+//     previewContent.innerHTML = `
+//       <h4>${item.title}</h4>
+//       <img src="${item.imageUrl}" 
+//            alt="${item.title}" 
+//            style="max-width:${Math.min(leftContainerWidth * 0.4, 300)}px">
+//     `;
     
-    // プレビューの位置調整
-    const offsetX = 20;
-    const offsetY = 20;
-    const maxRight = window.innerWidth - preview.offsetWidth - 10;
+//     // プレビューの位置調整
+//     const offsetX = 20;
+//     const offsetY = 20;
+//     const maxRight = window.innerWidth - preview.offsetWidth - 10;
     
-    preview.style.left = `${Math.min(e.clientX + offsetX, maxRight)}px`;
-    preview.style.top = `${e.clientY + offsetY}px`;
-    preview.style.display = 'block';
-    preview.style.opacity = '1';
-  }
-});
+//     preview.style.left = `${Math.min(e.clientX + offsetX, maxRight)}px`;
+//     preview.style.top = `${e.clientY + offsetY}px`;
+//     preview.style.display = 'block';
+//     preview.style.opacity = '1';
+//   }
+// });
 
 // マウスがポイントから離れたときの処理
 canvas.addEventListener("mouseleave", () => {
