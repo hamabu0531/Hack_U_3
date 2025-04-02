@@ -435,7 +435,7 @@ chart = new Chart(ctx, {
       afterDraw: (chart) => {
         const ctx = chart.ctx;
         ctx.save();
-        ctx.font = "14px Arial";
+        ctx.font = "bold 30px Arial";
         ctx.fillStyle = "black";
 
             // キャンバスサイズを取得
@@ -449,7 +449,7 @@ chart = new Chart(ctx, {
         // 怒: 右上
         let x2Pos = chart.scales.x.getPixelForValue(1);
         let y2Pos = chart.scales.y.getPixelForValue(1);
-        ctx.fillText("喜", x2Pos - canvasWidth * 0.01, y2Pos + canvasHeight * 0.02);
+        ctx.fillText("喜", x2Pos - canvasWidth * 0.05, y2Pos + canvasHeight * 0.02);
 
         // 哀: 左下
         let x3Pos = chart.scales.x.getPixelForValue(0);
@@ -459,7 +459,7 @@ chart = new Chart(ctx, {
         // 楽: 右下
         let x4Pos = chart.scales.x.getPixelForValue(1);
         let y4Pos = chart.scales.y.getPixelForValue(0);
-        ctx.fillText("楽", x4Pos - canvasWidth * 0.01, y4Pos - canvasHeight * 0.05);
+        ctx.fillText("楽", x4Pos - canvasWidth * 0.05, y4Pos - canvasHeight * 0.05);
 
         ctx.restore();
       }
