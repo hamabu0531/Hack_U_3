@@ -415,7 +415,17 @@ chart = new Chart(ctx, {
       },
     },
     plugins: {
-
+      legend: {
+        display: false, // 凡例を非表示
+      },
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem) {
+            const item = data[tooltipItem.dataIndex];
+            return `${item.title}`; // タイトルを表示
+          },
+        },
+      },
     },
     animation: false, // アニメーションをオフにするとラベルが適切に描画されやすい
   },
@@ -475,8 +485,7 @@ canvas.addEventListener("mousemove", (e) => {
     previewContent.innerHTML = `
       <h4>${item.title}</h4>
       <img src="${item.imageUrl}" 
-           alt="${item.title}" 
-           style="max-width:${Math.min(leftContainerWidth * 0.4, 300)}px">
+           alt="${item.title}" >
     `;
     previewContent.style.opacity = '1'; // 画像とタイトルを表示
     preview.style.opacity = '1'; // プレビューを表示
@@ -490,7 +499,7 @@ canvas.addEventListener("mousemove", (e) => {
 // マウスがポイントから離れたときの処理
 canvas.addEventListener("mouseleave", () => {
   const preview = document.getElementById("imagePreview");
-  preview.style.opacity = '1';
+  preview.style.opacity = '0';
   // setTimeout(() => preview.style.display = 'none', 300);
 });
 
@@ -504,7 +513,7 @@ document.getElementById("left-container").addEventListener("mouseenter", () => {
 // left-containerからマウスが離れたときの処理
 document.getElementById("left-container").addEventListener("mouseleave", () => {
   const preview = document.getElementById("imagePreview");
-  preview.style.opacity = '1'; // プレビューを非表示
+  preview.style.opacity = '0'; // プレビューを非表示
   // setTimeout(() => preview.style.display = 'none', 300);
 });
 
@@ -512,3 +521,16 @@ document.getElementById("left-container").addEventListener("mouseleave", () => {
 
 
 
+// 画像選択時の処理
+document.getElementById("imageInput").addEventListener("change", function (event) {
+  const file = event.target.files[0];
+  if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+          const imgElement = document.getElementById("preview"); // preview 要素を取得
+          imgElement.style.display = "block"; // プレビューを表示
+          imgElement.src = e.target.result; // src を更新
+      };
+      reader.readAsDataURL(file);
+  }
+});
