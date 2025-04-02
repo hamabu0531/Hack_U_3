@@ -104,8 +104,8 @@ async function findNearestImageInFirestore_sscript(mean, variance, n = 2) {
 
       snapshot.forEach(doc => {
           const data = doc.data();
-          const docMean = parseFloat(data.mean);
-          const docVar = parseFloat(data.var);
+          const docMean = parseFloat(data.x);
+          const docVar = parseFloat(data.y);
           const distance = Math.sqrt(
               Math.pow(mean - docMean, 2) +
               Math.pow(variance - docVar, 2)
