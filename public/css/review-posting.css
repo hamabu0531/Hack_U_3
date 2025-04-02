@@ -55,6 +55,10 @@ header {
 }
 footer {
     padding: 20px 0;
+    font-size: 20px;
+}
+footer i {
+    font-family: fantasy, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 .searchButton {
     background-color: white;
