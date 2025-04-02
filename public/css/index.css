@@ -99,6 +99,10 @@ footer i {
     max-width: 50%;
 }
 
+.desc-container i {
+    font-family: fantasy, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: normal;
+}
 .buttons {
     display: flex;
     justify-content: space-around; /* ボタンを等間隔に配置 */
