@@ -422,6 +422,12 @@ chart = new Chart(ctx, {
         callbacks: {
           label: function (tooltipItem) {
             const item = data[tooltipItem.dataIndex];
+            console.log(tooltipItem.dataset.label);
+            // 赤い点（検索画像）の場合
+            if (tooltipItem.dataset.label === '検索画像') {
+              return `検索画像`;
+            }
+            
             return `${item.title}`; // タイトルを表示
           },
         },
