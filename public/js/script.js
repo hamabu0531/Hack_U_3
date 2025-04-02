@@ -467,7 +467,18 @@ canvas.addEventListener("mousemove", (e) => {
 
   if (points.length) {
     const item = data[points[0].index];
-    
+        // 「検索画像」のデータセット（赤い点）ならプレビューを表示しない
+        console.log("item", item);
+        console.log("chart.data.datasets[0].label", chart.data.datasets[0].label);
+        console.log(chart.data.datasets[3].label);
+        console.log(preview);
+        console.log(previewContent);
+        console.log(points[0].index);
+        console.log(points[0].datasetIndex);
+      if (points[0].datasetIndex === 3) {
+        preview.style.opacity = '0';
+        return;
+      }
     // プレビュー内容を更新
     previewContent.innerHTML = `
       <h4>${item.title}</h4>
@@ -484,32 +495,36 @@ canvas.addEventListener("mousemove", (e) => {
 });
 
 // マウスがポイントに乗っている間は画像を表示し続ける
-canvas.addEventListener("mouseenter", (e) => {
-  const points = chart.getElementsAtEventForMode(e, 'nearest', {intersect: true}, false);
-  if (points.length) {
-    const item = data[points[0].index];
-    const preview = document.getElementById("imagePreview");
-    const previewContent = document.getElementById("previewContent");
-    
-    // プレビュー内容を更新
-    previewContent.innerHTML = `
-      <h4>${item.title}</h4>
-      <img src="${item.imageUrl}" 
-           alt="${item.title}" 
-           style="max-width:${Math.min(leftContainerWidth * 0.4, 300)}px">
-    `;
-    
-    // プレビューの位置調整
-    const offsetX = 20;
-    const offsetY = 20;
-    const maxRight = window.innerWidth - preview.offsetWidth - 10;
-    
-    preview.style.left = `${Math.min(e.clientX + offsetX, maxRight)}px`;
-    preview.style.top = `${e.clientY + offsetY}px`;
-    preview.style.display = 'block';
-    preview.style.opacity = '1';
-  }
-});
+// canvas.addEventListener("mouseenter", (e) => {
+//   const points = chart.getElementsAtEventForMode(e, 'nearest', {intersect: true}, false);
+//   if (points.length) {
+//     const item = data[points[0].index];
+//     const preview = document.getElementById("imagePreview");
+//     const previewContent = document.getElementById("previewContent");
+
+
+
+//       // 「検索画像」のデータセット（赤い点）ならプレビューを表示しない
+//     if (chart.data.datasets[datasetIndex].label === "検索画像") {
+//         preview.style.opacity = '0';
+//         return;
+//       }
+
+
+//     // プレビュー内容を更新
+//     previewContent.innerHTML = `
+//       <h4>${item.title}</h4>
+//       <img src="${item.imageUrl}" 
+//            alt="${item.title}" 
+//            style="max-width:${Math.min(leftContainerWidth * 0.4, 300)}px">
+//     `;
+//     previewContent.style.opacity = '1'; // 画像とタイトルを表示
+//     preview.style.opacity = '1'; // プレビューを表示
+//   } else {
+//     previewContent.style.opacity = '0'; // 画像とタイトルを非表示
+//     preview.style.opacity = '0'; // プレビューを非表示
+//   }
+// });
 
 // マウスがポイントから離れたときの処理
 canvas.addEventListener("mouseleave", () => {
