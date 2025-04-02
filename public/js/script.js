@@ -262,7 +262,7 @@ function fileToImage(file, callback) {
 
 // グローバル変数を定義
 let embeddingX, embeddingY;
-
+let chart = null; // グローバルスコープに chart を宣言
 // 投稿ボタン押下時の処理
 document.getElementById("submit").addEventListener("click", async function (event) {
   event.preventDefault();
@@ -351,9 +351,12 @@ const data = allcoordinate.map((book) => ({
 
 // Chart.jsでグラフを描画
 const ctx = canvas.getContext('2d');
+  // 既存の Chart インスタンスを削除
+  if (chart !== null) { // chart が null でない場合のみ削除
+    chart.destroy();
+}
 
-
-const chart = new Chart(ctx, {
+chart = new Chart(ctx, {
   type: "scatter",
   data: {
     datasets: [
