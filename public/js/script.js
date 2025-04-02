@@ -310,7 +310,7 @@ document.getElementById("submit").addEventListener("click", async function (even
                 // 書籍情報をすべて表示
                 await showBooks(sortedResults);
      
- 
+              });
 
   await getAllCoordinate();
   // x と y の値をそれぞれ抽出
@@ -376,16 +376,16 @@ const chart = new Chart(ctx, {
         fill: false,
         pointRadius: 0,
       },
-      {
-        label: "赤い点", // 新しい点用のデータセット
-        // data: [{ x: 0.25, y: 0.25 }], // 新しい赤い点の座標
-        data: [{ 
-          x: embeddingResult.stats.x, 
-          y: embeddingResult.stats.y 
-        }], 
-        backgroundColor: "red", // 赤色に設定
-        pointRadius: 10, // 点の大きさ
-      }
+      // {
+      //   label: "赤い点", // 新しい点用のデータセット
+      //   // data: [{ x: 0.25, y: 0.25 }], // 新しい赤い点の座標
+      //   data: [{ 
+      //     x: embeddingResult.stats.x, 
+      //     y: embeddingResult.stats.y 
+      //   }], 
+      //   backgroundColor: "red", // 赤色に設定
+      //   pointRadius: 10, // 点の大きさ
+      // }
     ],
   },
   options: {
@@ -442,7 +442,7 @@ const chart = new Chart(ctx, {
       }
     }]
 });
-});
+
 
 
 
