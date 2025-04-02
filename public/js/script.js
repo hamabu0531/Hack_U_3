@@ -327,7 +327,7 @@ document.getElementById("submit").addEventListener("click", async function (even
   // left-containerの幅を取得してCanvas要素に適用
   const leftContainerWidth = document.getElementById('left-container').offsetWidth;
   canvas.width = leftContainerWidth;
-  canvas.height = leftContainerWidth; // 縦の大きさを横幅と同じに設定
+  canvas.height = leftContainerWidth ; // 縦の大きさを横幅と同じに設定
   // 結果をコンソールに表示
   console.log("x values:", xValues);
   console.log("y values:", yValues);
@@ -405,6 +405,9 @@ chart = new Chart(ctx, {
         min: 0,
         max: 1,
         grid: { display: true },
+        ticks: {
+          display: false, // x軸のメモリ値を非表示
+        },
       },
       y: {
         type: "linear",
@@ -412,11 +415,15 @@ chart = new Chart(ctx, {
         min: 0,
         max: 1,
         grid: { display: true },
+        ticks: {
+          display: false, // x軸のメモリ値を非表示
+        },
       },
     },
     plugins: {
       legend: {
-        display: false, // 凡例を非表示
+        display: 'auto', // 凡例を非表示
+        clamp: true, 
       },
       tooltip: {
         callbacks: {
@@ -443,25 +450,28 @@ chart = new Chart(ctx, {
         ctx.font = "14px Arial";
         ctx.fillStyle = "black";
 
+            // キャンバスサイズを取得
+        const canvasWidth = chart.width;
+        const canvasHeight = chart.height;
         // 喜: 左上
         let x1Pos = chart.scales.x.getPixelForValue(0);
         let y1Pos = chart.scales.y.getPixelForValue(1);
-        ctx.fillText("怒", x1Pos + 10, y1Pos - 10);
+        ctx.fillText("怒", x1Pos - canvasWidth * 0.02, y1Pos + canvasHeight * 0.02);
 
         // 怒: 右上
         let x2Pos = chart.scales.x.getPixelForValue(1);
         let y2Pos = chart.scales.y.getPixelForValue(1);
-        ctx.fillText("喜", x2Pos - 20, y2Pos - 10);
+        ctx.fillText("喜", x2Pos - canvasWidth * 0.05, y2Pos + canvasHeight * 0.02);
 
         // 哀: 左下
         let x3Pos = chart.scales.x.getPixelForValue(0);
         let y3Pos = chart.scales.y.getPixelForValue(0);
-        ctx.fillText("哀", x3Pos + 10, y3Pos + 20);
+        ctx.fillText("哀", x3Pos - canvasWidth * 0.02, y3Pos - canvasHeight * 0.05);
 
         // 楽: 右下
         let x4Pos = chart.scales.x.getPixelForValue(1);
         let y4Pos = chart.scales.y.getPixelForValue(0);
-        ctx.fillText("楽", x4Pos - 20, y4Pos + 20);
+        ctx.fillText("楽", x4Pos - canvasWidth * 0.05, y4Pos - canvasHeight * 0.05);
 
         ctx.restore();
       }
