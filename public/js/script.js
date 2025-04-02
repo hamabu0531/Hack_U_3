@@ -490,7 +490,10 @@ canvas.addEventListener("mouseenter", (e) => {
     const item = data[points[0].index];
     const preview = document.getElementById("imagePreview");
     const previewContent = document.getElementById("previewContent");
-    
+    if (points[0].datasetIndex === 3) {
+      preview.style.opacity = '0';
+      return;
+    }
     // プレビュー内容を更新
     previewContent.innerHTML = `
       <h4>${item.title}</h4>
