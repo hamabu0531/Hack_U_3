@@ -361,13 +361,13 @@ chart = new Chart(ctx, {
   data: {
     datasets: [
       {
-        label: "ポイント",
+        label: "推薦本",
         data: data,
         backgroundColor: "blue",
         pointRadius: 10,
       },
       {
-        label: "x=0.5の直線",
+        label: "",
         data: [{ x: 0.5, y: 0 }, { x: 0.5, y: 1 }],
         borderColor: "black",
         borderWidth: 2,
@@ -376,7 +376,7 @@ chart = new Chart(ctx, {
         pointRadius: 0,
       },
       {
-        label: "y=0.5の直線",
+        label: "",
         data: [{ x: 0, y: 0.5 }, { x: 1, y: 0.5 }],
         borderColor: "black",
         borderWidth: 2,
@@ -385,7 +385,7 @@ chart = new Chart(ctx, {
         pointRadius: 0,
       },
       {
-        label: "赤い点", // 新しい点用のデータセット
+        label: "検索画像", // 新しい点用のデータセット
         // data: [{ x: 0.25, y: 0.25 }], // 新しい赤い点の座標
         // data: [{ 
         //   x: embeddingResult.stats.x, 
@@ -430,12 +430,12 @@ chart = new Chart(ctx, {
         // 喜: 左上
         let x1Pos = chart.scales.x.getPixelForValue(0);
         let y1Pos = chart.scales.y.getPixelForValue(1);
-        ctx.fillText("喜", x1Pos + 10, y1Pos - 10);
+        ctx.fillText("怒", x1Pos + 10, y1Pos - 10);
 
         // 怒: 右上
         let x2Pos = chart.scales.x.getPixelForValue(1);
         let y2Pos = chart.scales.y.getPixelForValue(1);
-        ctx.fillText("怒", x2Pos - 20, y2Pos - 10);
+        ctx.fillText("喜", x2Pos - 20, y2Pos - 10);
 
         // 哀: 左下
         let x3Pos = chart.scales.x.getPixelForValue(0);
