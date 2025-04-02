@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="./css/style.css">
     <script type="module" src="./js/script.js"></script>
     <script type="module" src="./js/graph.js"></script>
-   
+    <script src="./js/scoring.js"></script>
     <script src="./js/books.js"></script>
         <!-- Chart.jsのCDN -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script type="module" src="./js/review-posting.js" defer></script>
 </head>
 <body>
 
@@ -22,8 +23,8 @@
             <a href="./index.html">Image2Books</a>
         </div>
         <div class="header-right">
-            <a href="./search.html">
-                <button class="searchButton" type="button">検索ページへ</button>
+            <a href="./review-posting.html">
+                <button class="searchButton" type="button">レビューへ</button>
             </a>
             <a href="./index.html">
                 <button class="topButton" type="button">トップページへ戻る</button>
@@ -45,8 +46,9 @@
         <!-- 右側（画像アップロード部分） -->
         <div id="right-container" class="container">
             <label for="imageInput" class="label-file">画像を選択</label>
-            <input type="file" id="imageInput" accept="image/*" onchange="showSearchSection()">
-         
+            <input type="file" id="imageInput" accept="image/*" required>
+            <!-- <img id="preview" src="" alt="Image Preview" style="display: none;"> -->
+
             <div class="tabs">
                 <button class="tab-button active" data-emotion="喜">😊 喜</button>
                 <button class="tab-button" data-emotion="怒">😡 怒</button>
@@ -57,7 +59,7 @@
             <button id="submit">投稿</button>
         
             <br>
-            <button onclick="processImage()">画像を表示</button>
+           
        
             <canvas id="scatterChart"></canvas> 
         </div>
