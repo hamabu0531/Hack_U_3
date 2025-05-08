@@ -40,4 +40,4 @@ $ firebase emulators:start --only storage
 $ firebase serve
 ```
 
-以上
+文責：shimooo3
